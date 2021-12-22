@@ -1,11 +1,12 @@
 const express = require('express');
 const app = express();
 const fs = require('fs');
-const path = 'C:/Users/Usuari/Desktop/Sistema documental/';
+const path = process.env.PATHTOFOLDER;
 
 app.get('/', (req, res) => {
     let fullPath = path;
     if (req.query.path) fullPath = path + req.query.path + '/';
+    console.log(fullPath)
     const content = fs.readdirSync(fullPath);
     const folders = []
     const files = []
