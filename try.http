@@ -2,14 +2,8 @@ http://localhost:3001/
 
 ###
 
-GET http://localhost:3001/?path=Documentos RRHH
+GET http://localhost:3001/
 
 ###
 
-POST http://localhost:3001/?path=Documentos RRHH
-Content-type: application/json
-
-{
-    "file": "asd.txt",
-    "time": "22/12/2021"
-}
+DELETE http://localhost:3001/?file=emoticono.xlsx
