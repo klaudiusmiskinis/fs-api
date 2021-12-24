@@ -41,9 +41,6 @@ app.post('/', async (req, res) => {
     if (req.query.path) fullPath = path + req.query.path + '/';
     fullPath = decodeURI(fullPath);
     fullPath = fullPath.split('%20').join(' ')
-    const content = fs.readdirSync(fullPath);
-    const folders = [];
-    const files = [];
     try {
         await req.files.file.mv(fullPath + req.files.file.name)
     } catch (error) {
@@ -51,8 +48,7 @@ app.post('/', async (req, res) => {
     }
     res.json({
         success: true,
-        message: "Some success message",
-        data: "some data if there's any"
+        message: "Uploaded Correctly"
     });
     res.end();
 })
@@ -69,8 +65,7 @@ app.delete('/', (req, res) => {
     };
     res.json({
         success: true,
-        message: "Some success message",
-        data: "some data if there's any"
+        message: "Deleted succesfully",
     });
     res.end();
 })
