@@ -93,6 +93,8 @@ app.delete('/', async (req, res) => {
             await fs.unlinkSync(fullPath)
         } else if (req.query.folder) {
             fullPath = fullPath + '/' + req.query.folder;
+            if (fullPath.includes('//')) fullPath = fullPath.split('//').join('/');
+            await fs.rmSync(fullPath, { recursive: true, force: true });
         }
     } catch(error) {
         console.log('Error', error)
