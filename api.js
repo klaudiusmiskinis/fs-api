@@ -2,7 +2,8 @@
 require('dotenv').config();
 const express = require('express');
 const fileupload = require("express-fileupload");
-const methodOverride = require('method-override')
+const methodOverride = require('method-override');
+const mime = require('mime');
 const cors = require('cors');
 const fs = require('fs');
 const bodyParser = require('body-parser');
@@ -42,19 +43,19 @@ app.get('/', (req, res) => {
             success: false,
         });
     } else if (!catchError) {
-        if (req.query.download) {
-            res.download(fullPath + req.query.download, req.query.download, function(err){
-                console.log(err);
-            });
-        } else {
-            res.status(200).json({
-                success: true,
-                path: req.query.path,
-                folders: folders,
-                files: files
-            });
-        }
+        res.status(200).json({
+            success: true,
+            path: req.query.path,
+            folders: folders,
+            files: files
+        });
+        res.end();
     };
+});
+
+app.post('/download', (req, res) => {
+    let fullPath = path;
+    res.download(fullPath + req.query.path?? + req.query.download);
 });
 
 app.post('/', async (req, res) => {
