@@ -21,8 +21,8 @@ app.get('/', (req, res) => {
     let fullPath = path;
     let catchError = false;
     let content, folders, files;
+    if (req.query.path) fullPath = path + req.query.path + '/';
     try {
-        if (req.query.path) fullPath = path + req.query.path + '/';
         fullPath = decodeURI(fullPath);
         fullPath = fullPath.split('%20').join(' ')
         content = fs.readdirSync(fullPath);
@@ -41,19 +41,25 @@ app.get('/', (req, res) => {
         res.status(200).json({
             success: false,
         });
-    } else if (!catchError){
-        res.status(200).json({
-            success: true,
-            path: req.query.path,
-            folders: folders,
-            files: files
-        });
+    } else if (!catchError) {
+        if (req.query.download) {
+            res.download(fullPath + req.query.download, req.query.download, function(err){
+                console.log(err);
+            });
+        } else {
+            res.status(200).json({
+                success: true,
+                path: req.query.path,
+                folders: folders,
+                files: files
+            });
+        }
     };
-    res.end();
 });
 
 app.post('/', async (req, res) => {
     let fullPath = path;
+    if (req.query.path) fullPath = path + req.query.path + '/';
     let catchError = false;
     try {
         if (req.files) {
@@ -61,7 +67,6 @@ app.post('/', async (req, res) => {
             fullPath = fullPath.split('%20').join(' ')
             await req.files.file.mv(fullPath + req.files.file.name)
         } else if (req.query.folder) {
-            if (req.query.path) fullPath = path + req.query.path + '/';
             fullPath = fullPath + req.query.folder;
             fullPath = decodeURI(fullPath);
             fullPath = fullPath.split('%20').join(' ')
