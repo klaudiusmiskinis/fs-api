@@ -55,11 +55,18 @@ app.get('/', (req, res) => {
 app.post('/', async (req, res) => {
     let fullPath = path;
     let catchError = false;
-    if (req.query.path) fullPath = path + req.query.path + '/';
-    fullPath = decodeURI(fullPath);
-    fullPath = fullPath.split('%20').join(' ')
     try {
-        await req.files.file.mv(fullPath + req.files.file.name)
+        if (req.files) {
+            fullPath = decodeURI(fullPath);
+            fullPath = fullPath.split('%20').join(' ')
+            await req.files.file.mv(fullPath + req.files.file.name)
+        } else if (req.query.folder) {
+            if (req.query.path) fullPath = path + req.query.path + '/';
+            fullPath = fullPath + req.query.folder;
+            fullPath = decodeURI(fullPath);
+            fullPath = fullPath.split('%20').join(' ')
+            await fs.mkdirSync(fullPath)
+        } 
     } catch(error) {
         console.log('Error', error)
         catchError = true;
@@ -68,7 +75,7 @@ app.post('/', async (req, res) => {
         res.status(200).json({
             success: false,
         })
-    } else if (!catchError){
+    } else if (!catchError) {
         res.status(200).json({
             success: true,
         });
@@ -76,17 +83,22 @@ app.post('/', async (req, res) => {
     res.end();
 })
 
-app.delete('/', (req, res) => {
-    let filePath = path;
+app.delete('/', async (req, res) => {
+    let fullPath = path;
     let catchError = false;
-    if (req.query.path) filePath = filePath + req.query.path + '/';
-    if (req.query.file) filePath = filePath + req.query.file;
+    if (req.query.path) fullPath = fullPath + req.query.path;
     try {
-        fs.unlinkSync(filePath)
+        if (req.query.file) {
+            fullPath = fullPath + '/' + req.query.file;
+            await fs.unlinkSync(fullPath)
+        } else if (req.query.folder) {
+            fullPath = fullPath + '/' + req.query.folder;
+        }
     } catch(error) {
         console.log('Error', error)
         catchError = true;
     }
+ 
     if (catchError) {
         res.status(200).json({
             success: false,
