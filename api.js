@@ -54,6 +54,7 @@ app.get('/', (req, res) => {
 
 app.get('/download', (req, res) => {
     let fullPath = path;
+    if (req.query.path) fullPath = fullPath + req.query.path + '/';
     res.download(fullPath + req.query.download);
 });
 
