@@ -12,10 +12,10 @@ const path = process.env.PATHTOFOLDER;
 
 /* Configuration */
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(methodOverride('_method'))
+app.use(methodOverride('_method'));
 app.use(express.json());
 app.use(fileupload());
-app.use(cors())
+app.use(cors());
 
 /* HTTP Methods */
 app.get('/', (req, res) => {
@@ -52,9 +52,9 @@ app.get('/', (req, res) => {
     };
 });
 
-app.post('/download', (req, res) => {
+app.get('/download', (req, res) => {
     let fullPath = path;
-    res.download(fullPath + req.query.path?? + req.query.download);
+    res.download(fullPath + req.query.download);
 });
 
 app.post('/', async (req, res) => {
@@ -95,21 +95,21 @@ app.delete('/', async (req, res) => {
     try {
         if (req.query.file) {
             fullPath = fullPath + '/' + req.query.file;
-            await fs.unlinkSync(fullPath)
+            await fs.unlinkSync(fullPath);
         } else if (req.query.folder) {
             fullPath = fullPath + '/' + req.query.folder;
             if (fullPath.includes('//')) fullPath = fullPath.split('//').join('/');
             await fs.rmSync(fullPath, { recursive: true, force: true });
         };
     } catch(error) {
-        console.log('Error', error)
+        console.log('Error', error);
         catchError = true;
     };
  
     if (catchError) {
         res.status(200).json({
             success: false,
-        })
+        });
     } else if (!catchError){
         res.status(200).json({
             success: true,
