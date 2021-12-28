@@ -21,15 +21,14 @@ app.use(cors())
 app.get('/', (req, res) => {
     let fullPath = path;
     let catchError = false;
-    let content, folders, files;
+    let content = ''; 
+    let folders = []; 
+    let files = [];
     if (req.query.path) fullPath = path + req.query.path + '/';
     try {
         fullPath = decodeURI(fullPath);
         fullPath = fullPath.split('%20').join(' ')
         content = fs.readdirSync(fullPath);
-        folders = [];
-        files = [];
-    
         content.forEach(recurso => {
             if (fs.lstatSync(fullPath + recurso).isDirectory()) folders.push(recurso);
             else files.push(recurso);
@@ -85,9 +84,9 @@ app.post('/', async (req, res) => {
         res.status(200).json({
             success: true,
         });
-    }
+    };
     res.end();
-})
+});
 
 app.delete('/', async (req, res) => {
     let fullPath = path;
@@ -101,11 +100,11 @@ app.delete('/', async (req, res) => {
             fullPath = fullPath + '/' + req.query.folder;
             if (fullPath.includes('//')) fullPath = fullPath.split('//').join('/');
             await fs.rmSync(fullPath, { recursive: true, force: true });
-        }
+        };
     } catch(error) {
         console.log('Error', error)
         catchError = true;
-    }
+    };
  
     if (catchError) {
         res.status(200).json({
@@ -115,9 +114,9 @@ app.delete('/', async (req, res) => {
         res.status(200).json({
             success: true,
         });
-    }
+    };
     res.end();
-})
+});
 
 app.listen(process.env.PORT, (err) => {
     if (err) console.log(err);
