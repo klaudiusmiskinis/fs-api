@@ -8,7 +8,6 @@ const cors = require('cors');
 const fs = require('fs');
 const bodyParser = require('body-parser');
 const app = express();
-const path = process.env.PATHTOFOLDER; 
 
 /* Configuration */
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,12 +18,13 @@ app.use(cors());
 
 /* HTTP Methods */
 app.get('/', (req, res) => {
-    let fullPath = path;
+    console.log(req.query)
+    let fullPath = process.env.PATHTOFOLDER;
     let catchError = false;
     let content = ''; 
     let folders = []; 
     let files = [];
-    if (req.query.path) fullPath = path + req.query.path + '/';
+    if (req.query.path) fullPath = fullPath + req.query.path + '/';
     try {
         fullPath = decodeURI(fullPath);
         fullPath = fullPath.split('%20').join(' ')
@@ -53,14 +53,16 @@ app.get('/', (req, res) => {
 });
 
 app.get('/download', (req, res) => {
-    let fullPath = path;
+    console.log(req.query)
+    let fullPath = process.env.PATHTOFOLDER;
     if (req.query.path) fullPath = fullPath + req.query.path + '/';
     res.download(fullPath + req.query.download);
 });
 
 app.post('/', async (req, res) => {
-    let fullPath = path;
-    if (req.query.path) fullPath = path + req.query.path + '/';
+    console.log(req.query, req.files.file.name)
+    let fullPath = process.env.PATHTOFOLDER;
+    if (req.query.path) fullPath = fullPath + req.query.path + '/';
     let catchError = false;
     try {
         if (req.files) {
@@ -90,7 +92,8 @@ app.post('/', async (req, res) => {
 });
 
 app.delete('/', async (req, res) => {
-    let fullPath = path;
+    console.log(req.query)
+    let fullPath = process.env.PATHTOFOLDER;
     let catchError = false;
     if (req.query.path) fullPath = fullPath + req.query.path;
     try {
