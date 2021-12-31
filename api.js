@@ -60,7 +60,7 @@ app.get('/download', (req, res) => {
 });
 
 app.post('/', async (req, res) => {
-    console.log(req.query, req.files.file.name)
+    console.log(req.query, req.files)
     let fullPath = process.env.PATHTOFOLDER;
     if (req.query.path) fullPath = fullPath + req.query.path + '/';
     let catchError = false;
