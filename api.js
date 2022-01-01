@@ -3,7 +3,6 @@ require('dotenv').config();
 const express = require('express');
 const fileupload = require("express-fileupload");
 const methodOverride = require('method-override');
-const mime = require('mime');
 const cors = require('cors');
 const fs = require('fs');
 const bodyParser = require('body-parser');
@@ -124,5 +123,5 @@ app.delete('/', async (req, res) => {
 
 app.listen(process.env.PORT, (err) => {
     if (err) console.log(err);
-    console.log('API Desplegada:', `http://localhost:3001`);
+    console.log('API Desplegada:', `http://localhost:${process.env.PORT}`);
 });
