@@ -1,5 +1,5 @@
-class queryActioner {
-    query
+class QueryActioner {
+    query;
 
     constructor(query) {
         this.query = query;
@@ -14,3 +14,11 @@ class queryActioner {
     }
 }
 
+let url = new QueryActioner(
+    [
+        {data: 'file', datainfo: 'datainfo'},
+        {data: 'folder', pacoinfo: 'pacoinfo'}
+    ]
+)
+
+console.log(url.getQuery())
