@@ -52,14 +52,6 @@ class QueryActioner {
             default:
                 break;
         }
-
-        if (body) {
-            console.log(body)
-        }
-
-        if (files) {
-            console.log(files)
-        }
     }
 }
 
