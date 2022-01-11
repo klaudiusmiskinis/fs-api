@@ -67,6 +67,9 @@ app.post('/', async (req, res) => {
         if (req.files) {
             fullPath = decodeURI(fullPath);
             fullPath = fullPath.split('%20').join(' ')
+            if (req.query.updateName) {
+                req.files.file.name = (req.query.updateName + '.' + req.files.file.name.split('.')[req.files.file.name.split('.').length - 1]);
+            }
             await req.files.file.mv(fullPath + req.files.file.name)
         } else if (req.query.folder) {
             fullPath = fullPath + req.query.folder;
