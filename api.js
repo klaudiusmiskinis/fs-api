@@ -74,8 +74,10 @@ app.post('/', async (req, res) => {
         } else if (req.query.folder) {
             fullPath = fullPath + req.query.folder;
             fullPath = decodeURI(fullPath);
-            fullPath = fullPath.split('%20').join(' ')
-            await fs.mkdirSync(fullPath)
+            fullPath = fullPath.split('%20').join(' ');
+            await fs.mkdirSync(fullPath);
+        } else if (req.query.edit && req.query.to) {
+            await fs.renameSync(fullPath + req.query.edit, fullPath + req.query.to);
         } 
     } catch(error) {
         console.log('Error', error)
