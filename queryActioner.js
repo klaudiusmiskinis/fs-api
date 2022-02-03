@@ -37,7 +37,7 @@ class QueryActioner {
         switch (action) {
             case 'create':
                 if (files) {
-                    await req.files.file.mv(process.env.PATHTOFOLDER + req.files.file.name)
+                    await files.file.mv(process.env.PATHTOFOLDER + files.file.name);
                 } else if (body) {
 
                 }
