@@ -4,9 +4,12 @@ const fileupload = require("express-fileupload");
 const methodOverride = require('method-override');
 const bodyParser = require('body-parser');
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const fs = require('fs');
 const app = express();
+const { test, selectAllFiles } = require('./sql');
+const { generarToken } = require('./jwt');
 
 /* Configuration */
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -50,6 +53,21 @@ app.get('/', (req, res) => {
         res.end();
     };
 });
+
+app.get('/admin/status', (req, res) => {
+    try {
+        const response = []
+        const user = { name: req.body.user || 'test' }
+        const token = generarToken(user);
+        test().then(rows => response.push(rows));
+    } catch (e) {
+        console.log(e)
+    }
+})
+
+app.post('/login', (req, res) => {
+    console.log(req)
+})
 
 app.get('/download', (req, res) => {
     console.log(req.query)
