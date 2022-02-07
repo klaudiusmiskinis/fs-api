@@ -4,23 +4,22 @@ const fileupload = require("express-fileupload");
 const methodOverride = require('method-override');
 const bodyParser = require('body-parser');
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const fs = require('fs');
 const app = express();
 const { test, selectAllFiles } = require('./sql');
 const { generarToken } = require('./jwt');
+const { extended, method, failed } = require('./config')
 
 /* Configuration */
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(methodOverride('_method'));
+app.use(bodyParser.urlencoded(extended));
+app.use(methodOverride(method));
 app.use(express.json());
 app.use(fileupload());
 app.use(cors());
 
 /* HTTP Methods */
 app.get('/', (req, res) => {
-    console.log(req.query)
     let fullPath = process.env.PATHTOFOLDER;
     let catchError = false;
     let content = ''; 
@@ -40,9 +39,7 @@ app.get('/', (req, res) => {
         catchError = true;
     };
     if (catchError) {
-        res.status(200).json({
-            success: false,
-        });
+        res.status(200).json(failed);
     } else if (!catchError) {
         res.status(200).json({
             success: true,
@@ -54,23 +51,25 @@ app.get('/', (req, res) => {
     };
 });
 
-app.get('/admin/status', (req, res) => {
+app.get('/admin/status', async (req, res) => {
     try {
         const response = []
         const user = { name: req.body.user || 'test' }
-        const token = generarToken(user);
-        test().then(rows => response.push(rows));
+        const token = generarToken(user)
+        response.push(token)
+        await test().then(rows => response.push(rows));
+        res.json(response);
     } catch (e) {
         console.log(e)
     }
 })
 
 app.post('/login', (req, res) => {
-    console.log(req)
+    console.log('login', req);
 })
 
 app.get('/download', (req, res) => {
-    console.log(req.query)
+    console.log('descarga', req.query);
     let fullPath = process.env.PATHTOFOLDER;
     if (req.query.path) fullPath = fullPath + req.query.path + '/';
     res.download(fullPath + req.query.download);
@@ -102,9 +101,7 @@ app.post('/', async (req, res) => {
         catchError = true;
     }
     if (catchError) {
-        res.status(200).json({
-            success: false,
-        })
+        res.status(200).json(failed);
     } else if (!catchError) {
         res.status(200).json({
             success: true,
@@ -133,9 +130,7 @@ app.delete('/', async (req, res) => {
     };
  
     if (catchError) {
-        res.status(200).json({
-            success: false,
-        });
+        res.status(200).json(failed);
     } else if (!catchError){
         res.status(200).json({
             success: true,
