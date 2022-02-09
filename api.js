@@ -59,21 +59,50 @@ app.get('/admin/status', async (req, res) => {
         response.push(token)
         await test().then(rows => response.push(rows));
         res.json(response);
-    } catch (e) {
-        console.log(e)
-    }
+    } catch (error) {
+        console.log('Error', error)
+        catchError = true;
+    };
+
+    if (catchError) {
+        res.status(200).json(failed);
+    } else if (!catchError) {
+        res.status(200).json({
+            success: true,
+            path: req.query.path,
+            folders: folders,
+            files: files
+        });
+        res.end();
+    };
 })
 
+app.get('/json', (req, res) => {
+    res.sendFile(__dirname + '/asd.json')
+})
+
+/*
+* POST to /login
+* 
+*
+*/
+
 app.post('/login', (req, res) => {
-    console.log('login', req);
+    console.log('login', req.body);
 })
 
 app.get('/download', (req, res) => {
-    console.log('descarga', req.query);
     let fullPath = process.env.PATHTOFOLDER;
     if (req.query.path) fullPath = fullPath + req.query.path + '/';
     res.download(fullPath + req.query.download);
 });
+
+/*
+* POST to /
+* This HTTP method does multiple general like upload, create and rename functions. 
+* If there is a file in the request, it save it in the path we sent.
+* Queries = path - updateName - folder - edit - to
+*/
 
 app.post('/', async (req, res) => {
     console.log(req.query, req.files)
@@ -99,7 +128,7 @@ app.post('/', async (req, res) => {
     } catch(error) {
         console.log('Error', error)
         catchError = true;
-    }
+    };
     if (catchError) {
         res.status(200).json(failed);
     } else if (!catchError) {
@@ -111,7 +140,7 @@ app.post('/', async (req, res) => {
 });
 
 app.delete('/', async (req, res) => {
-    console.log(req.query)
+    console.log(req.query);
     let fullPath = process.env.PATHTOFOLDER;
     let catchError = false;
     if (req.query.path) fullPath = fullPath + req.query.path;
