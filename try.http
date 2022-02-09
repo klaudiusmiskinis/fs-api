@@ -2,4 +2,8 @@ GET http://localhost:3001/admin/status
 
 ###
 
+GET http://localhost:3001/json
+
+###
+
 DELETE http://localhost:3001/?file=emoticono.xlsx
