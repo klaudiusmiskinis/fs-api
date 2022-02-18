@@ -54,12 +54,3 @@ class QueryActioner {
         }
     }
 }
-
-/* CREATE */
-console.log(new QueryActioner().actionAuto('create', {data: 'file', datainfo: 'datainfo'}));
-
-/* REMOVE */
-console.log(new QueryActioner({data: 'file', datainfo: 'datainfo'}).getQuery(), 'delete');
-
-/* UPDATE */
-console.log(new QueryActioner({file: {name: 'installer.exe'}}).getQuery(), 'create');

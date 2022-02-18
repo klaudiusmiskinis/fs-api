@@ -2,6 +2,10 @@ GET http://localhost:3001/admin/status
 
 ###
 
+GET http://localhost:3001/all
+
+###
+
 GET http://localhost:3001/json
 
 ###

@@ -7,9 +7,12 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const app = express();
+const crypto = require('crypto');
+const wrench = require("wrench");
 const { test, selectAllFiles } = require('./sql');
 const { generarToken } = require('./jwt');
-const { extended, method, failed } = require('./config')
+const { extended, method, failed } = require('./config');
+const { query } = require('express');
 
 /* Configuration */
 app.use(bodyParser.urlencoded(extended));
@@ -51,6 +54,33 @@ app.get('/', (req, res) => {
     };
 });
 
+app.get('/all', async (req, res) => {
+    try {
+        const all = await wrench.readdirSyncRecursive(process.env.PATHTOFOLDER);
+        const allFiles = [];
+        const allFolder = [];
+        all.forEach(item => {
+            if (fs.lstatSync(process.env.PATHTOFOLDER + item).isFile()) {
+                item = item.split(/\\/g).join('/');
+                allFiles.push(item);
+            } else if (fs.lstatSync(process.env.PATHTOFOLDER + item).isDirectory()) {
+                item = item = item.split(/\\/g).join('/');
+                allFolder.push(item);
+            }
+        })
+        const time = new Date();
+        const items = {
+            files: allFiles,
+            folders: allFolder
+        }
+        fs.writeFileSync('data/' + time.getTime().toString() + '.json', JSON.stringify(items, null, 4));
+        res.send(allFiles)
+    } catch (e) {
+        console.log(e)
+    }
+
+})
+
 app.get('/admin/status', async (req, res) => {
     try {
         const response = []
@@ -83,7 +113,6 @@ app.get('/json', (req, res) => {
 
 /*
 * POST to /login
-* 
 *
 */
 
@@ -157,7 +186,6 @@ app.delete('/', async (req, res) => {
         console.log('Error', error);
         catchError = true;
     };
- 
     if (catchError) {
         res.status(200).json(failed);
     } else if (!catchError){
