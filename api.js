@@ -12,7 +12,6 @@ const wrench = require("wrench");
 const { test, selectAllFiles } = require('./sql');
 const { generarToken } = require('./jwt');
 const { extended, method, failed } = require('./config');
-const { query } = require('express');
 
 /* Configuration */
 app.use(bodyParser.urlencoded(extended));
@@ -55,6 +54,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/all', async (req, res) => {
+    let catchError = false;
     try {
         const all = await wrench.readdirSyncRecursive(process.env.PATHTOFOLDER);
         const allFiles = [];
@@ -81,14 +81,14 @@ app.get('/all', async (req, res) => {
 
 })
 
-app.get('/admin/status', async (req, res) => {
+app.get('/status', async (req, res) => {
+    let catchError = false;
+    const response = []
     try {
-        const response = []
         const user = { name: req.body.user || 'test' }
         const token = generarToken(user)
         response.push(token)
         await test().then(rows => response.push(rows));
-        res.json(response);
     } catch (error) {
         console.log('Error', error)
         catchError = true;
@@ -100,12 +100,24 @@ app.get('/admin/status', async (req, res) => {
         res.status(200).json({
             success: true,
             path: req.query.path,
-            folders: folders,
-            files: files
+            response: response
         });
         res.end();
     };
 })
+
+app.get('/check', (req, res) => {
+    let catchError = false;
+    const response = []
+    try {
+        const files = fs.readdirSync(__dirname + '/data');
+        const result = files.forEach( (item, i, self) => self[i] = item.split('.')[0]);
+        console.log(b);
+    } catch (error) {
+        console.log('Error', error)
+        catchError = true;
+    };
+});
 
 /*
 * POST to /login

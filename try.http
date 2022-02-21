@@ -6,4 +6,8 @@ GET http://localhost:3001/all
 
 ###
 
+GET http://localhost:3001/check
+
+###
+
 DELETE http://localhost:3001/?file=emoticono.xlsx
