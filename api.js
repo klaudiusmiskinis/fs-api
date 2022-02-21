@@ -74,7 +74,7 @@ app.get('/all', async (req, res) => {
             folders: allFolder
         }
         fs.writeFileSync('data/' + time.getTime().toString() + '.json', JSON.stringify(items, null, 4));
-        res.send(allFiles)
+        res.end();
     } catch (e) {
         console.log(e)
     }
