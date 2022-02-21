@@ -107,15 +107,9 @@ app.get('/admin/status', async (req, res) => {
     };
 })
 
-app.get('/json', (req, res) => {
-    res.sendFile(__dirname + '/asd.json')
-})
-
 /*
 * POST to /login
-*
 */
-
 app.post('/login', (req, res) => {
     console.log('login', req.body);
 })
@@ -132,7 +126,6 @@ app.get('/download', (req, res) => {
 * If there is a file in the request, it save it in the path we sent.
 * Queries = path - updateName - folder - edit - to
 */
-
 app.post('/', async (req, res) => {
     console.log(req.query, req.files)
     let fullPath = process.env.PATHTOFOLDER;
