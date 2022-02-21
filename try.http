@@ -1,4 +1,4 @@
-GET http://localhost:3001/admin/status
+GET http://localhost:3001/status
 
 ###
 
