@@ -111,10 +111,17 @@ app.get('/check', (req, res) => {
     const response = []
     try {
         const files = fs.readdirSync(__dirname + '/data');
-        const result = files.forEach( (item, i, self) => self[i] = item.split('.')[0]);
-        console.log(b);
+        const filesWithoutExtension = [];
+        files.forEach(item => {
+            filesWithoutExtension.push(item.split('.')[0]);
+        });
+        const maxDate = new Date(Math.max.apply(null, filesWithoutExtension));
+        const lastFile = {
+            file: maxDate.getTime() + '.json'
+        }
+        res.json(lastFile)
     } catch (error) {
-        console.log('Error', error)
+        console.log('Error', error);
         catchError = true;
     };
 });
