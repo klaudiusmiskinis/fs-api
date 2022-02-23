@@ -1,12 +1,23 @@
+const fs = require('fs')
+
 module.exports = {
-    reading: async function(path) {
+    reading: function(path) {
         const folders = []; 
         const files = [];
-        const content = await fs.readdirSync(fullPath);
+        const content = fs.readdirSync(path);
         content.forEach(recurso => {
-            if (fs.lstatSync(fullPath + recurso).isDirectory()) folders.push(recurso);
+            if (fs.lstatSync(path + recurso).isDirectory()) folders.push(recurso);
             else files.push(recurso);
         });
-        return folders, files
+        return [folders, files];
+    },
+
+    pathChanger: function(path, query) {
+        return path + query + '/';
+    },
+
+    error: function(error) {
+        console.log(error);
+        return true;
     }
 }
