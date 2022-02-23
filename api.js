@@ -10,7 +10,7 @@ const app = express();
 const wrench = require("wrench");
 const { test, selectAllFiles } = require('./sql');
 const { extended, method, failed } = require('./config');
-const { generarToken } = require('./jwt');
+const { generateToken } = require('./jwt');
 const { reading } = require('./actioner');
 
 /* Configuration */
@@ -77,7 +77,7 @@ app.get('/status', async (req, res) => {
     const response = []
     try {
         const user = { name: req.body.user || 'test' }
-        const token = generarToken(user)
+        const token = generateToken(user)
         response.push(token)
         await test().then(rows => response.push(rows));
     } catch (error) {
