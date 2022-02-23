@@ -23,15 +23,13 @@ app.use(cors());
 /* HTTP Methods */
 app.get('/', async (req, res) => {
     let fullPath = process.env.PATHTOFOLDER;
-    const folders = []; 
-    const files = [];
-    if (req.query.path) fullPath = fullPath + req.query.path + '/';
     let catchError = false;
+    let result;
+    if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
     try {
-        const result = reading(fullPath);
+        result = reading(fullPath);
     } catch(error) {
-        console.log('Error', error)
-        catchError = true;
+        catchError = error(error);
     };
     if (catchError) {
         res.status(200).json(failed);
