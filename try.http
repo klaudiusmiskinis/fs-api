@@ -2,7 +2,7 @@ GET http://localhost:3001/status
 
 ###
 
-GET http://localhost:3001/all
+GET http://localhost:3001/recursive
 
 ###
 
