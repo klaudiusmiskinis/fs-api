@@ -1,7 +1,7 @@
 require('dotenv').config();
 const util = require('util');
 const mysql = require('mysql2');
-const LoginMysql = {
+const connection = {
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PWD,
@@ -9,23 +9,21 @@ const LoginMysql = {
 }
 
 module.exports.test = test = () => (async() => {
-    const conn = mysql.createConnection(LoginMysql);
+    const conn = mysql.createConnection(connection);
     try {
         const query = util.promisify(conn.query).bind(conn);
-        const rows = await query('select count(*) as count from archivos');
-        return rows;
+        return await query('select count(*) as count from archivos');
     } finally {
       conn.end();
     }
-})()
+})();
 
 module.exports.selectAllFiles = selectAllFiles = () => (async() => {
-    const conn = mysql.createConnection(LoginMysql);
+    const conn = mysql.createConnection(connection);
     try {
         const query = util.promisify(conn.query).bind(conn);
-        const rows = await query('select * from archivos');
-        return rows;
+        return await query('select * from archivos');
     } finally {
         conn.end();
     }
-})
+})();
