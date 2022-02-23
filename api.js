@@ -7,11 +7,11 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const app = express();
-const crypto = require('crypto');
 const wrench = require("wrench");
 const { test, selectAllFiles } = require('./sql');
-const { generarToken } = require('./jwt');
 const { extended, method, failed } = require('./config');
+const { generarToken } = require('./jwt');
+const { reading } = require('./actioner');
 
 /* Configuration */
 app.use(bodyParser.urlencoded(extended));
@@ -21,21 +21,14 @@ app.use(fileupload());
 app.use(cors());
 
 /* HTTP Methods */
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     let fullPath = process.env.PATHTOFOLDER;
-    let catchError = false;
-    let content = ''; 
-    let folders = []; 
-    let files = [];
+    const folders = []; 
+    const files = [];
     if (req.query.path) fullPath = fullPath + req.query.path + '/';
+    let catchError = false;
     try {
-        fullPath = decodeURI(fullPath);
-        fullPath = fullPath.split('%20').join(' ')
-        content = fs.readdirSync(fullPath);
-        content.forEach(recurso => {
-            if (fs.lstatSync(fullPath + recurso).isDirectory()) folders.push(recurso);
-            else files.push(recurso);
-        });
+        const result = reading(fullPath);
     } catch(error) {
         console.log('Error', error)
         catchError = true;
@@ -46,14 +39,14 @@ app.get('/', (req, res) => {
         res.status(200).json({
             success: true,
             path: req.query.path,
-            folders: folders,
-            files: files
+            folders: result[0],
+            files: result[1]
         });
         res.end();
     };
 });
 
-app.get('/all', async (req, res) => {
+app.get('/recursive', async (req, res) => {
     let catchError = false;
     try {
         const all = await wrench.readdirSyncRecursive(process.env.PATHTOFOLDER);
@@ -73,7 +66,7 @@ app.get('/all', async (req, res) => {
             files: allFiles,
             folders: allFolder
         }
-        fs.writeFileSync('data/' + time.getTime().toString() + '.json', JSON.stringify(items, null, 4));
+        await fs.writeFileSync('data/' + time.getTime().toString() + '.json', JSON.stringify(items, null, 4));
         res.end();
     } catch (e) {
         console.log(e)
