@@ -11,7 +11,7 @@ const wrench = require("wrench");
 const { test, selectAllFiles } = require('./sql');
 const { extended, method, failed } = require('./config');
 const { generateToken } = require('./jwt');
-const { reading } = require('./actioner');
+const { reading, getFoldersAndFiles } = require('./actioner');
 
 /* Configuration */
 app.use(bodyParser.urlencoded(extended));
@@ -21,28 +21,7 @@ app.use(fileupload());
 app.use(cors());
 
 /* HTTP Methods */
-app.get('/', async (req, res) => {
-    let fullPath = process.env.PATHTOFOLDER;
-    let catchError = false;
-    let result;
-    if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
-    try {
-        result = reading(fullPath);
-    } catch(error) {
-        catchError = error(error);
-    };
-    if (catchError) {
-        res.status(200).json(failed);
-    } else if (!catchError) {
-        res.status(200).json({
-            success: true,
-            path: req.query.path,
-            folders: result[0],
-            files: result[1]
-        });
-        res.end();
-    };
-});
+app.get('/', getFoldersAndFiles);
 
 app.get('/recursive', async (req, res) => {
     let catchError = false;
