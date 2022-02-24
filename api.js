@@ -7,11 +7,10 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const app = express();
-const wrench = require("wrench");
-const { test, selectAllFiles } = require('./sql');
+const { test } = require('./sql');
 const { extended, method, failed } = require('./config');
 const { generateToken } = require('./jwt');
-const { reading, getFoldersAndFiles } = require('./actioner');
+const { getFoldersAndFiles, makeRecursive } = require('./actioner');
 
 /* Configuration */
 app.use(bodyParser.urlencoded(extended));
@@ -23,33 +22,7 @@ app.use(cors());
 /* HTTP Methods */
 app.get('/', getFoldersAndFiles);
 
-app.get('/recursive', async (req, res) => {
-    let catchError = false;
-    try {
-        const all = await wrench.readdirSyncRecursive(process.env.PATHTOFOLDER);
-        const allFiles = [];
-        const allFolder = [];
-        all.forEach(item => {
-            if (fs.lstatSync(process.env.PATHTOFOLDER + item).isFile()) {
-                item = item.split(/\\/g).join('/');
-                allFiles.push(item);
-            } else if (fs.lstatSync(process.env.PATHTOFOLDER + item).isDirectory()) {
-                item = item = item.split(/\\/g).join('/');
-                allFolder.push(item);
-            }
-        })
-        const time = new Date();
-        const items = {
-            files: allFiles,
-            folders: allFolder
-        }
-        await fs.writeFileSync('data/' + time.getTime().toString() + '.json', JSON.stringify(items, null, 4));
-        res.end();
-    } catch (e) {
-        console.log(e)
-    }
-
-})
+app.get('/recursive', makeRecursive)
 
 app.get('/status', async (req, res) => {
     let catchError = false;
