@@ -21,7 +21,11 @@ class Items {
     }
 
     avoid(filesToAvoid, folderToAvoid) {
-        this.files = this.files.filter();
         const avoidedFiles = this.files.filter(file => !filesToAvoid.includes(file));
+        const avoidedFolders = this.folders.filter(folder => !folderToAvoid.includes(folder));
+        return {
+            files: avoidedFiles,
+            folders: avoidedFolders
+        }
     }
 }
