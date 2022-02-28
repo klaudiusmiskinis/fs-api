@@ -1,10 +1,12 @@
 const fs = require('fs');
 const wrench = require("wrench");
 const { failed } = require('./config');
+const { generateToken } = require('./jwt');
 const { reading, pathChanger } = require('./helpers');
 
 module.exports.getFoldersAndFiles = getFoldersAndFiles;
 module.exports.makeRecursive = makeRecursive;
+module.exports.status = status;
 
 /**
  * 
@@ -68,3 +70,22 @@ function getFoldersAndFiles(req, res) {
     res.end();
 }
 
+async function status(req, res) {
+    const response = []
+        const user = { name: req.body.user || 'test' };
+        const token = generateToken(user);
+        response.push(token);
+    try {
+        await insertArchivos();
+    } catch(e) {
+        console.log(e);
+        res.status(200).json(failed);
+        res.end();
+    };
+    res.status(200).json({
+        success: true,
+        path: req.query.path,
+        response: response
+    });
+    res.end();
+}
