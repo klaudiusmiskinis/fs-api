@@ -1,5 +1,6 @@
 const fs = require('fs');
 const wrench = require("wrench");
+const Items = require('./class/items');
 const { failed } = require('./config');
 const { generateToken } = require('./jwt');
 const { insertArchivos } = require('./sql');
@@ -41,7 +42,7 @@ function check(req, res)  {
  * @param res 
  */
 async function makeRecursive(req, res) {
-    const items = await wrench.readdirSyncRecursive(process.env.PATHTOFOLDER);
+    let items = await wrench.readdirSyncRecursive(process.env.PATHTOFOLDER);
     const allFiles = [];
     const allFolder = [];
     items.forEach(item => {
@@ -54,10 +55,9 @@ async function makeRecursive(req, res) {
         }
     })
     try {
-        const items = new Items(allFiles, allFolder);
+        items = new Items(allFiles, allFolder);
         const time = new Date();
         await fs.writeFileSync('data/' + time.getTime().toString() + '.json', JSON.stringify(items, null, 4));
-        res.end();
     } catch (e) {
         console.log(e);
         res.status(200).json(failed);
@@ -65,9 +65,8 @@ async function makeRecursive(req, res) {
     }
     res.status(200).json({
         success: true,
-        path: req.query.path,
-        folders: result[0],
-        files: result[1]
+        files: items.files,
+        folder: items.folders
     });
     res.end();
 }
