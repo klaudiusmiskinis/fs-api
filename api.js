@@ -7,7 +7,6 @@ const methodOverride = require('method-override');
 const bodyParser = require('body-parser');
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
 const app = express();
 
 /* Configuration */
@@ -21,20 +20,15 @@ app.use(cors());
  * GETs
  */
 app.get('/', getFoldersAndFiles);
-
 app.get('/recursive', makeRecursive);
-
 app.get('/download', download);
-
 app.get('/status', status);
-
 app.get('/check', check);
 
 /**
  * POSTs
  */
 app.post('/', upload);
-
 app.post('/login', (req, res) => {
     console.log('login', req.body);
 })
@@ -43,7 +37,6 @@ app.post('/login', (req, res) => {
  * DELETEs
  */
 app.delete('/', deleteItems);
-
 
 /**
  * LISTEN
