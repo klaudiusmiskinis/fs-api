@@ -53,10 +53,10 @@ async function makeRecursive(req, res) {
             item = item = item.split(/\\/g).join('/');
             allFolder.push(item);
         }
-    })
+    });
     try {
-        items = new Items(allFiles, allFolder);
         const time = new Date();
+        items = new Items(allFiles, allFolder);
         await fs.writeFileSync('data/' + time.getTime().toString() + '.json', JSON.stringify(items, null, 4));
     } catch (e) {
         console.log(e);
