@@ -2,12 +2,15 @@ const fs = require('fs');
 const wrench = require("wrench");
 const { failed } = require('./config');
 const { generateToken } = require('./jwt');
+const { insertArchivos } = require('./sql');
 const { reading, pathChanger } = require('./helpers');
 
 module.exports.getFoldersAndFiles = getFoldersAndFiles;
 module.exports.makeRecursive = makeRecursive;
+module.exports.deleteItems = deleteItems;
 module.exports.download = download;
 module.exports.status = status;
+module.exports.upload = upload;
 module.exports.check = check;
 
 /**
@@ -132,6 +135,36 @@ function download(req, res) {
     let fullPath = process.env.PATHTOFOLDER;
     if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
     res.download(fullPath + req.query.download);
+    res.end();
+}
+
+
+async function upload(req, res) {
+    console.log(req.query, req.files)
+    let fullPath = process.env.PATHTOFOLDER;
+    if (req.query.path) fullPath = pathChanger(fullPath, req.query.path)
+    try {
+        if (req.files) {
+            fullPath = decodeURI(fullPath);
+            fullPath = fullPath.split('%20').join(' ')
+            if (req.query.updateName) {
+                req.files.file.name = (req.query.updateName + '.' + req.files.file.name.split('.')[req.files.file.name.split('.').length - 1]);
+            }
+            await req.files.file.mv(fullPath + req.files.file.name)
+        } else if (req.query.folder) {
+            fullPath = fullPath + req.query.folder;
+            await fs.mkdirSync(fullPath);
+        } else if (req.query.edit && req.query.to) {
+            await fs.renameSync(fullPath + req.query.edit, fullPath + req.query.to);
+        } 
+    } catch(e) {
+        console.log(e);
+        res.status(200).json(failed);
+        res.end();
+    };
+    res.status(200).json({
+        success: true,
+    });
     res.end();
 }
 
