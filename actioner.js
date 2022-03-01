@@ -6,18 +6,42 @@ const { reading, pathChanger } = require('./helpers');
 
 module.exports.getFoldersAndFiles = getFoldersAndFiles;
 module.exports.makeRecursive = makeRecursive;
+module.exports.download = download;
 module.exports.status = status;
+module.exports.check = check;
 
 /**
  * 
- * @param {*} req 
- * @param {*} res 
+ * @param req 
+ * @param res 
+ */
+function check(req, res)  {
+    const filesWithoutExtension = [];
+    let files = [];
+    try {
+        files = fs.readdirSync(__dirname + '/data');
+    } catch(e) {
+        res.status(200).json(failed);
+        res.end();
+    }
+    files.forEach(item => {
+        filesWithoutExtension.push(item.split('.')[0]);
+    });
+    const maxDate = new Date(Math.max.apply(null, filesWithoutExtension));
+    res.status(200).json(maxDate.getTime() + '.json');
+    res.end();
+}
+
+/**
+ * 
+ * @param req 
+ * @param res 
  */
 async function makeRecursive(req, res) {
-    const all = await wrench.readdirSyncRecursive(process.env.PATHTOFOLDER);
+    const items = await wrench.readdirSyncRecursive(process.env.PATHTOFOLDER);
     const allFiles = [];
     const allFolder = [];
-    all.forEach(item => {
+    items.forEach(item => {
         if (fs.lstatSync(process.env.PATHTOFOLDER + item).isFile()) {
             item = item.split(/\\/g).join('/');
             allFiles.push(item);
@@ -26,8 +50,8 @@ async function makeRecursive(req, res) {
             allFolder.push(item);
         }
     })
-    const items = new Items(allFiles, allFolder);
     try {
+        const items = new Items(allFiles, allFolder);
         const time = new Date();
         await fs.writeFileSync('data/' + time.getTime().toString() + '.json', JSON.stringify(items, null, 4));
         res.end();
@@ -47,8 +71,8 @@ async function makeRecursive(req, res) {
 
 /**
  * 
- * @param {*} req 
- * @param {*} res 
+ * @param req 
+ * @param res 
  */
 function getFoldersAndFiles(req, res) {
     let fullPath = process.env.PATHTOFOLDER;
@@ -70,11 +94,57 @@ function getFoldersAndFiles(req, res) {
     res.end();
 }
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ */
+async function deleteItems(req, res) {
+    console.log(req.query);
+    let fullPath = process.env.PATHTOFOLDER;
+    if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
+    try {
+        if (req.query.file) {
+            fullPath = fullPath + '/' + req.query.file;
+            await fs.unlinkSync(fullPath);
+        } else if (req.query.folder) {
+            fullPath = fullPath + '/' + req.query.folder;
+            if (fullPath.includes('//')) fullPath = fullPath.split('//').join('/');
+            await fs.rmSync(fullPath, { recursive: true, force: true });
+        };
+    } catch(e) {
+        console.log(e);
+        res.status(200).json(failed);
+        res.end();
+    };
+    res.status(200).json({
+        success: true,
+    });
+    res.end();
+}
+
+/**
+ * 
+ * @param req 
+ * @param res 
+ */
+function download(req, res) {
+    let fullPath = process.env.PATHTOFOLDER;
+    if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
+    res.download(fullPath + req.query.download);
+    res.end();
+}
+
+/**
+ * 
+ * @param req 
+ * @param res 
+ */
 async function status(req, res) {
     const response = []
-        const user = { name: req.body.user || 'test' };
-        const token = generateToken(user);
-        response.push(token);
+    const user = { name: req.body.user || 'test' };
+    const token = generateToken(user);
+    response.push(token);
     try {
         await insertArchivos();
     } catch(e) {
