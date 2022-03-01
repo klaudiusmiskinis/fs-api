@@ -17,7 +17,9 @@ app.use(express.json());
 app.use(fileupload());
 app.use(cors());
 
-/* HTTP Methods */
+/**
+ * GETs
+ */
 app.get('/', getFoldersAndFiles);
 
 app.get('/recursive', makeRecursive);
@@ -28,24 +30,24 @@ app.get('/status', status);
 
 app.get('/check', check);
 
-
 /**
- * POST to /login
+ * POSTs
  */
+app.post('/', upload);
+
 app.post('/login', (req, res) => {
     console.log('login', req.body);
 })
 
-/*
-* POST to /
-* This HTTP method does multiple general like upload, create and rename functions. 
-* If there is a file in the request, it save it in the path we sent.
-* Queries = path - updateName - folder - edit - to
-*/
-app.post('/', upload);
-
+/**
+ * DELETEs
+ */
 app.delete('/', deleteItems);
 
+
+/**
+ * LISTEN
+ */
 app.listen(process.env.PORT, (err) => {
     if (err) console.log(err);
     console.log('API Desplegada:', `http://localhost:${process.env.PORT}`);
