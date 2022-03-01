@@ -5,7 +5,7 @@ module.exports.pathChanger = pathChanger;
 
 /**
  * 
- * @param {*} path 
+ * @param path 
  * @returns 
  */
  function reading(path) {
@@ -21,8 +21,8 @@ module.exports.pathChanger = pathChanger;
 
 /**
  * 
- * @param {*} path 
- * @param {*} query 
+ * @param path 
+ * @param query 
  * @returns 
  */
 function pathChanger(path, query) {
