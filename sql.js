@@ -1,6 +1,7 @@
 require('dotenv').config();
 const util = require('util');
 const mysql = require('mysql2');
+
 const connection = {
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
@@ -23,6 +24,37 @@ module.exports.selectAllFiles = selectAllFiles = () => (async() => {
     try {
         const query = util.promisify(conn.query).bind(conn);
         return await query('select * from archivos');
+    } finally {
+        conn.end();
+    }
+})();
+
+module.exports.selectAllFiles = selectAllFiles = () => (async() => {
+    const conn = mysql.createConnection(connection);
+    try {
+        const query = util.promisify(conn.query).bind(conn);
+        return await query('select * from archivos');
+    } finally {
+        conn.end();
+    }
+})();
+
+module.exports.cleanArchivos = cleanArchivos = () => (async() => {
+    const conn = mysql.createConnection(connection);
+    try {
+        const query = util.promisify(conn.query).bind(conn);
+        return await query('TRUNCATE TABLE archivos');
+    } finally {
+        conn.end();
+    }
+})();
+
+
+module.exports.insertArchivos = insertArchivos = (archivos) => (async() => {
+    const conn = mysql.createConnection(connection);
+    try {
+        const query = util.promisify(conn.query).bind(conn);
+        return await query('TRUNCATE TABLE archivos');
     } finally {
         conn.end();
     }
