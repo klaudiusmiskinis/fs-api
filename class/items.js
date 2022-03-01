@@ -1,4 +1,4 @@
-class Items {
+module.exports = class Items {
     constructor(files, folders) {
         this.files = files;
         this.folders = folders;
@@ -29,3 +29,4 @@ class Items {
         }
     }
 }
+
