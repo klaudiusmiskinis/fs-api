@@ -49,6 +49,16 @@ module.exports.cleanArchivos = cleanArchivos = () => (async() => {
     }
 })();
 
+module.exports.cleanVersiones = cleanVersiones = () => (async() => {
+    const conn = mysql.createConnection(connection);
+    try {
+        const query = util.promisify(conn.query).bind(conn);
+        return await query('TRUNCATE TABLE versiones');
+    } finally {
+        conn.end();
+    }
+})();
+
 
 module.exports.insertArchivos = insertArchivos = (archivos) => (async() => {
     const conn = mysql.createConnection(connection);
