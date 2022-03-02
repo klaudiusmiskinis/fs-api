@@ -1,7 +1,6 @@
 require('dotenv').config();
 const util = require('util');
 const mysql = require('mysql2');
-
 const connection = {
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
@@ -9,36 +8,48 @@ const connection = {
     database: process.env.MYSQL_DB
 }
 
+/**
+ * Makes a select with a count in archivos. Used for testing.
+ */
 module.exports.test = test = () => (async() => {
     const conn = mysql.createConnection(connection);
     try {
         const query = util.promisify(conn.query).bind(conn);
-        return await query('select count(*) as count from archivos');
+        return await query('SELECT count(*) as count FROM archivos');
     } finally {
       conn.end();
     }
 })();
 
+/**
+ * SELECT all the files from table archivos.
+ */
 module.exports.selectAllFiles = selectAllFiles = () => (async() => {
     const conn = mysql.createConnection(connection);
     try {
         const query = util.promisify(conn.query).bind(conn);
-        return await query('select * from archivos');
+        return await query('SELECT * FROM archivos');
     } finally {
         conn.end();
     }
 })();
 
-module.exports.selectAllFiles = selectAllFiles = () => (async() => {
+/**
+ * SELECT all the versions from table versiones.
+ */
+module.exports.selectAllVersions = selectAllVersions = () => (async() => {
     const conn = mysql.createConnection(connection);
     try {
         const query = util.promisify(conn.query).bind(conn);
-        return await query('select * from archivos');
+        return await query('SELECT * FROM versiones');
     } finally {
         conn.end();
     }
 })();
 
+/**
+ * Purges the table archivos.
+ */
 module.exports.cleanArchivos = cleanArchivos = () => (async() => {
     const conn = mysql.createConnection(connection);
     try {
@@ -49,6 +60,9 @@ module.exports.cleanArchivos = cleanArchivos = () => (async() => {
     }
 })();
 
+/**
+ * Purges the table versiones.
+ */
 module.exports.cleanVersiones = cleanVersiones = () => (async() => {
     const conn = mysql.createConnection(connection);
     try {
@@ -59,12 +73,14 @@ module.exports.cleanVersiones = cleanVersiones = () => (async() => {
     }
 })();
 
-
+/**
+ * Makes a massive insert into table archivos
+ */
 module.exports.insertArchivos = insertArchivos = (archivos) => (async() => {
     const conn = mysql.createConnection(connection);
     try {
         const query = util.promisify(conn.query).bind(conn);
-        return await query('TRUNCATE TABLE archivos');
+        return await query('');
     } finally {
         conn.end();
     }
