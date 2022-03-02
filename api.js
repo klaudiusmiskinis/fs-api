@@ -1,12 +1,20 @@
 /* Imports */
-require('dotenv').config();
-const { getFoldersAndFiles, makeRecursive, status, download, check, deleteItems, upload } = require('./actioner');
-const methodOverride = require('method-override');
-const { extended, method } = require('./config');
+require("dotenv").config();
+const {
+  getFoldersAndFiles,
+  makeRecursive,
+  status,
+  download,
+  check,
+  deleteItems,
+  upload,
+} = require("./actioner");
+const methodOverride = require("method-override");
+const { extended, method } = require("./config");
 const fileupload = require("express-fileupload");
-const bodyParser = require('body-parser');
-const express = require('express');
-const cors = require('cors');
+const bodyParser = require("body-parser");
+const express = require("express");
+const cors = require("cors");
 const app = express();
 
 /* Configuration */
@@ -19,29 +27,27 @@ app.use(cors());
 /**
  * GETs
  */
-app.get('/', getFoldersAndFiles);
-app.get('/recursive', makeRecursive);
-app.get('/download', download);
-app.get('/status', status);
-app.get('/check', check);
+app.get("/", getFoldersAndFiles);
+app.get("/recursive", makeRecursive);
+app.get("/download", download);
+app.get("/status", status);
+app.get("/check", check);
 
 /**
  * POSTs
  */
-app.post('/', upload);
-app.post('/login', (req, res) => {
-    console.log('login', req.body);
-})
+app.post("/", upload);
+app.post("/login", login);
 
 /**
  * DELETEs
  */
-app.delete('/', deleteItems);
+app.delete("/", deleteItems);
 
 /**
  * LISTEN
  */
 app.listen(process.env.PORT, (err) => {
-    if (err) console.log(err);
-    console.log('API Desplegada:', `http://localhost:${process.env.PORT}`);
+  if (err) console.log(err);
+  console.log("API Desplegada:", `http://localhost:${process.env.PORT}`);
 });

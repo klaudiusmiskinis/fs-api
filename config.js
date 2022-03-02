@@ -1,9 +1,9 @@
-module.exports.method = '_method';
+module.exports.method = "_method";
 
 module.exports.extended = {
-    extended: true
+  extended: true,
 };
 
 module.exports.failed = {
-    success: false
-}
+  success: false,
+};
