@@ -210,9 +210,7 @@ async function status(req, res) {
 async function login(req, res) {
   console.log(req.body);
   res.status(200).json({
-    success: true,
-    path: req.query.path,
-    response: response,
+    success: true
   });
   res.end();
 }
