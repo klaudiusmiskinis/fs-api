@@ -1,9 +1,9 @@
 /* Imports */
 require('dotenv').config();
-const { extended, method, failed } = require('./config');
 const { getFoldersAndFiles, makeRecursive, status, download, check, deleteItems, upload } = require('./actioner');
-const fileupload = require("express-fileupload");
 const methodOverride = require('method-override');
+const { extended, method } = require('./config');
+const fileupload = require("express-fileupload");
 const bodyParser = require('body-parser');
 const express = require('express');
 const cors = require('cors');
