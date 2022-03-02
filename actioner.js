@@ -14,7 +14,7 @@ module.exports.status = status;
 module.exports.upload = upload;
 module.exports.check = check;
 module.exports.login = login;
-
+module.exports.purge = purge;
 /**
  *
  * @param req
@@ -199,6 +199,11 @@ async function status(req, res) {
     path: req.query.path,
     response: response,
   });
+  res.end();
+}
+
+function purge(req, res) {
+  console.log(req.params);
   res.end();
 }
 
