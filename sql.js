@@ -9,7 +9,7 @@ const connection = {
 };
 
 /**
- * Makes a select with a count in archivos. Used for testing.
+ * Selects with a count in archivos. Used for testing.
  */
 module.exports.test = test = () =>
   (async () => {
@@ -23,7 +23,7 @@ module.exports.test = test = () =>
   })();
 
 /**
- * SELECT all the files from table archivos.
+ * Selects all the files from table archivos.
  */
 module.exports.selectAllFiles = selectAllFiles = () =>
   (async () => {
@@ -37,7 +37,7 @@ module.exports.selectAllFiles = selectAllFiles = () =>
   })();
 
 /**
- * SELECT all the versions from table versiones.
+ * Selects all the versions from table versiones.
  */
 module.exports.selectAllVersions = selectAllVersions = () =>
   (async () => {
@@ -79,7 +79,7 @@ module.exports.cleanVersiones = cleanVersiones = () =>
   })();
 
 /**
- * Makes a massive insert into table archivos
+ * Makes a massive insert into table archivos.
  */
 module.exports.insertArchivos = insertArchivos = (archivos) =>
   (async () => {
