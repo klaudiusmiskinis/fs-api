@@ -9,6 +9,7 @@ const {
   deleteItems,
   upload,
   login,
+  purge,
 } = require("./actioner");
 const methodOverride = require("method-override");
 const { extended, method } = require("./config");
@@ -39,7 +40,8 @@ app.get("/check", check);
  */
 app.post("/", upload);
 app.post("/login", login);
-
+// app.post("/recursive", insertRecursive);
+app.post("/purge/:table", purge);
 /**
  * DELETEs
  */
