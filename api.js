@@ -8,6 +8,7 @@ const {
   check,
   deleteItems,
   upload,
+  login,
 } = require("./actioner");
 const methodOverride = require("method-override");
 const { extended, method } = require("./config");
