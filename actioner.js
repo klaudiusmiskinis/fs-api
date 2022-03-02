@@ -7,6 +7,7 @@ const { insertArchivos } = require('./sql');
 const { reading, pathChanger } = require('./helpers');
 
 module.exports.getFoldersAndFiles = getFoldersAndFiles;
+module.exports.errorMiddleware = errorMiddleware;
 module.exports.makeRecursive = makeRecursive;
 module.exports.deleteItems = deleteItems;
 module.exports.download = download;
@@ -32,7 +33,10 @@ function check(req, res)  {
         filesWithoutExtension.push(item.split('.')[0]);
     });
     const maxDate = new Date(Math.max.apply(null, filesWithoutExtension));
-    res.status(200).json(maxDate.getTime() + '.json');
+    const obj = {
+        file: maxDate.getTime() + '.json'
+    }
+    res.status(200).json(obj);
     res.end();
 }
 
@@ -182,12 +186,23 @@ async function status(req, res) {
     } catch(e) {
         console.log(e);
         res.status(200).json(failed);
-        res.end();
-    };
+    }
     res.status(200).json({
         success: true,
         path: req.query.path,
         response: response
     });
     res.end();
+}
+
+function errorMiddleware(error, req, res, next) {
+    console.log("Error Handling Middleware called");
+    console.log('Path: ', req.path)
+    console.error('Error: ', error)
+    if (error.type == 'time-out') {
+        res.status(408).send(error)
+    } else {
+        res.status(500).send(error)
+    }
+    next();
 }
