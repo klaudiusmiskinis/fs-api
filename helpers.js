@@ -2,9 +2,9 @@ const fs = require('fs');
 
 module.exports.reading = reading;
 module.exports.pathChanger = pathChanger;
-
+module.exports;
 /**
- * 
+ * Reads recursive a folder and returns an array with 2 items containing folders and files
  * @param path 
  * @returns 
  */
@@ -20,7 +20,7 @@ module.exports.pathChanger = pathChanger;
 }
 
 /**
- * 
+ * Adds a query to the path and end with a slash
  * @param path 
  * @param query 
  * @returns 
