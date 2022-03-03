@@ -1,4 +1,5 @@
 const fs = require("fs");
+const wrench = require("wrench");
 
 module.exports.isEmpty = isEmpty;
 module.exports.reading = reading;
@@ -45,8 +46,8 @@ function isEmpty(obj) {
 
 /**
  * Reads recursive folder and object with folders and files.
- * @param path 
- * @returns 
+ * @param path
+ * @returns
  */
 async function getRecursive(path) {
   const folders = [];
