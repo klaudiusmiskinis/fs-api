@@ -3,9 +3,9 @@ const wrench = require("wrench");
 
 module.exports.isEmpty = isEmpty;
 module.exports.reading = reading;
+module.exports.getToday = getToday;
 module.exports.pathChanger = pathChanger;
 module.exports.getRecursive = getRecursive;
-module.exports.getToday = getToday;
 
 /**
  * Reads recursive a folder and returns an array with 2 items containing folders and files
