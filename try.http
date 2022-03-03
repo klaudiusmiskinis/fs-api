@@ -10,4 +10,4 @@ POST http://localhost:3001/recursive/all
 
 ###
 
-POST http://localhost:3001/purge/versiones
+POST http://localhost:3001/purge/archivos
