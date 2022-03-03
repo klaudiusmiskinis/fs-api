@@ -3,6 +3,7 @@ require("dotenv").config();
 const {
   getFoldersAndFiles,
   makeRecursive,
+  insertAll,
   status,
   download,
   check,
@@ -37,7 +38,7 @@ app.get("/check", check);
 app.post("/", upload);
 app.post("/login", login);
 app.post("/purge/:table", purge);
-// app.post("/insert/all", insertAll);
+app.post("/recursive/all", insertAll);
 
 /* DELETEs */
 app.delete("/", deleteItems);
