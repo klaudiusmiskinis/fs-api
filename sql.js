@@ -58,7 +58,10 @@ module.exports.purgeTable = purgeTable = (table) =>
     const conn = mysql.createConnection(connection);
     try {
       const query = util.promisify(conn.query).bind(conn);
-      const string = mysql.format('TRUNCATE TABLE ?', [table]).split("''").join("'");
+      const string = mysql
+        .format("TRUNCATE TABLE ?", [table])
+        .split("''")
+        .join("'");
       return await query(string);
     } finally {
       conn.end();
