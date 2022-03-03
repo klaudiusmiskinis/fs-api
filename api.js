@@ -31,7 +31,6 @@ app.use(cors());
 app.get("/", getFoldersAndFiles);
 app.get("/recursive", makeRecursive);
 app.get("/download", download);
-app.get("/status", status);
 app.get("/check", check);
 
 /* POSTs */

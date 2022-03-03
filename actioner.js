@@ -4,11 +4,11 @@ const { failed } = require("./config");
 const { generateToken } = require("./jwt");
 const { insertArchivos, purgeTable } = require("./sql");
 const {
-  reading,
-  pathChanger,
   isEmpty,
-  getRecursive,
+  reading,
   getToday,
+  pathChanger,
+  getRecursive,
 } = require("./helpers");
 
 module.exports.getFoldersAndFiles = getFoldersAndFiles;
@@ -16,7 +16,6 @@ module.exports.makeRecursive = makeRecursive;
 module.exports.deleteItems = deleteItems;
 module.exports.insertAll = insertAll;
 module.exports.download = download;
-module.exports.status = status;
 module.exports.upload = upload;
 module.exports.check = check;
 module.exports.login = login;
@@ -163,28 +162,6 @@ async function upload(req, res) {
   }
   res.status(200).json({
     success: true,
-  });
-  res.end();
-}
-
-/**
- *
- */
-async function status(req, res) {
-  const response = [];
-  const user = { name: req.body.user || "test" };
-  const token = generateToken(user);
-  response.push(token);
-  try {
-    await insertArchivos();
-  } catch (e) {
-    console.log(e);
-    res.status(200).json(failed);
-  }
-  res.status(200).json({
-    success: true,
-    path: req.query.path,
-    response: response,
   });
   res.end();
 }
