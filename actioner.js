@@ -3,7 +3,13 @@ const Items = require("./class/items");
 const { failed } = require("./config");
 const { generateToken } = require("./jwt");
 const { insertArchivos, purgeTable } = require("./sql");
-const { reading, pathChanger, isEmpty, getRecursive, getToday } = require("./helpers");
+const {
+  reading,
+  pathChanger,
+  isEmpty,
+  getRecursive,
+  getToday,
+} = require("./helpers");
 
 module.exports.getFoldersAndFiles = getFoldersAndFiles;
 module.exports.makeRecursive = makeRecursive;
@@ -15,10 +21,9 @@ module.exports.upload = upload;
 module.exports.check = check;
 module.exports.login = login;
 module.exports.purge = purge;
+
 /**
- *
- * @param req
- * @param res
+ * Return the lastest file
  */
 function check(req, res) {
   const filesWithoutExtension = [];
@@ -42,15 +47,12 @@ function check(req, res) {
 
 /**
  *
- * @param req
- * @param res
  */
 async function makeRecursive(req, res) {
-  const allFiles = [];
-  const allFolder = [];
+  let result = await getRecursive(process.env.PATHTOFOLDER);
   try {
     const time = new Date();
-    items = new Items(allFiles, allFolder);
+    const items = new Items(result.files, result.folder);
     await fs.writeFileSync(
       "data/" + time.getTime().toString() + ".json",
       JSON.stringify(items, null, 4)
@@ -62,16 +64,14 @@ async function makeRecursive(req, res) {
   }
   res.status(200).json({
     success: true,
-    files: items.files,
-    folder: items.folders,
+    files: result.files,
+    folder: result.folders,
   });
   res.end();
 }
 
 /**
  *
- * @param req
- * @param res
  */
 function getFoldersAndFiles(req, res) {
   let fullPath = process.env.PATHTOFOLDER;
@@ -95,8 +95,6 @@ function getFoldersAndFiles(req, res) {
 
 /**
  *
- * @param req
- * @param res
  */
 async function deleteItems(req, res) {
   console.log(req.query);
@@ -124,8 +122,6 @@ async function deleteItems(req, res) {
 
 /**
  *
- * @param req
- * @param res
  */
 function download(req, res) {
   let fullPath = process.env.PATHTOFOLDER;
@@ -134,6 +130,9 @@ function download(req, res) {
   res.end();
 }
 
+/**
+ *
+ */
 async function upload(req, res) {
   console.log(req.query, req.files);
   let fullPath = process.env.PATHTOFOLDER;
@@ -170,8 +169,6 @@ async function upload(req, res) {
 
 /**
  *
- * @param req
- * @param res
  */
 async function status(req, res) {
   const response = [];
@@ -195,23 +192,28 @@ async function status(req, res) {
 async function insertAll(req, res) {
   let result = await getRecursive(process.env.PATHTOFOLDER).then();
   const bulk = [];
-  result.files.forEach(file => {
-    const filename = file.split('/')[file.split('/').length - 1]
-    bulk.push([filename, file.split(filename)[0] || '/' , getToday(), 1])
-  })
-  console.log(bulk)
+  console.log(result.files.length);
+  result.files.forEach((file) => {
+    const filename = file.split("/")[file.split("/").length - 1];
+    bulk.push([filename, file.split(filename)[0] || "/", getToday(), 1]);
+  });
+  await insertArchivos(bulk);
+  res.json({
+    success: true,
+    message: "Bulked insert in table archivos",
+  });
 }
 
 async function purge(req, res) {
   if (!isEmpty(req.params)) {
     await purgeTable(req.params.table);
-    res.json({
-      done: true,
+    res.status(200).json({
+      success: true,
       message: "table cleared " + req.params.table,
     });
   } else {
-    res.json({
-      done: false,
+    res.status(200).json({
+      success: false,
       message: "Table " + req.params.table + " not found",
     });
   }
@@ -219,8 +221,6 @@ async function purge(req, res) {
 
 /**
  *
- * @param req
- * @param res
  */
 async function login(req, res) {
   console.log(req.body);
