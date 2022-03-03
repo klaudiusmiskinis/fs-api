@@ -60,8 +60,8 @@ module.exports.purgeTable = purgeTable = (table) =>
       const query = util.promisify(conn.query).bind(conn);
       const string = mysql
         .format("TRUNCATE TABLE ?", [table])
-        .split("''")
-        .join("'");
+        .split("'")
+        .join("");
       return await query(string);
     } finally {
       conn.end();
@@ -76,7 +76,14 @@ module.exports.insertArchivos = insertArchivos = (archivos) =>
     const conn = mysql.createConnection(connection);
     try {
       const query = util.promisify(conn.query).bind(conn);
-      return await query("");
+      const string = mysql
+        .format(
+          "INSERT INTO archivos(nombre, ruta, fechaCreacion, versionActual) VALUES ?",
+          [archivos]
+        )
+        .split("''")
+        .join("'");
+      return await query(string);
     } finally {
       conn.end();
     }
