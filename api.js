@@ -26,30 +26,23 @@ app.use(express.json());
 app.use(fileupload());
 app.use(cors());
 
-/**
- * GETs
- */
+/* GETs */
 app.get("/", getFoldersAndFiles);
 app.get("/recursive", makeRecursive);
 app.get("/download", download);
 app.get("/status", status);
 app.get("/check", check);
 
-/**
- * POSTs
- */
+/* POSTs */
 app.post("/", upload);
 app.post("/login", login);
-// app.post("/recursive", insertRecursive);
 app.post("/purge/:table", purge);
-/**
- * DELETEs
- */
+// app.post("/insert/all", insertAll);
+
+/* DELETEs */
 app.delete("/", deleteItems);
 
-/**
- * LISTEN
- */
+/* LISTEN */
 app.listen(process.env.PORT, (err) => {
   if (err) console.log(err);
   console.log("API Desplegada:", `http://localhost:${process.env.PORT}`);
