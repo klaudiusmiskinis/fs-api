@@ -3,8 +3,8 @@ const wrench = require("wrench");
 const Items = require("./class/items");
 const { failed } = require("./config");
 const { generateToken } = require("./jwt");
-const { insertArchivos } = require("./sql");
-const { reading, pathChanger } = require("./helpers");
+const { insertArchivos, purgeTable } = require("./sql");
+const { reading, pathChanger, isEmpty } = require("./helpers");
 
 module.exports.getFoldersAndFiles = getFoldersAndFiles;
 module.exports.makeRecursive = makeRecursive;
@@ -46,18 +46,8 @@ function check(req, res) {
  * @param res
  */
 async function makeRecursive(req, res) {
-  let items = await wrench.readdirSyncRecursive(process.env.PATHTOFOLDER);
   const allFiles = [];
   const allFolder = [];
-  items.forEach((item) => {
-    if (fs.lstatSync(process.env.PATHTOFOLDER + item).isFile()) {
-      item = item.split(/\\/g).join("/");
-      allFiles.push(item);
-    } else if (fs.lstatSync(process.env.PATHTOFOLDER + item).isDirectory()) {
-      item = item = item.split(/\\/g).join("/");
-      allFolder.push(item);
-    }
-  });
   try {
     const time = new Date();
     items = new Items(allFiles, allFolder);
@@ -97,8 +87,8 @@ function getFoldersAndFiles(req, res) {
   res.status(200).json({
     success: true,
     path: req.query.path,
-    folders: result[0],
-    files: result[1],
+    folders: result.folders,
+    files: result.files,
   });
   res.end();
 }
@@ -202,9 +192,21 @@ async function status(req, res) {
   res.end();
 }
 
-function purge(req, res) {
-  console.log(req.params);
-  res.end();
+function insertAll(req, res) {}
+
+async function purge(req, res) {
+  if (!isEmpty(req.params)) {
+    await purgeTable(req.params.table);
+    res.json({
+      done: true,
+      message: "table cleared " + req.params.table,
+    });
+  } else {
+    res.json({
+      done: false,
+      message: "Table " + req.params.table + " not found",
+    });
+  }
 }
 
 /**
@@ -215,7 +217,7 @@ function purge(req, res) {
 async function login(req, res) {
   console.log(req.body);
   res.status(200).json({
-    success: true
+    success: true,
   });
   res.end();
 }
