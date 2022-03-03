@@ -3,7 +3,7 @@ const Items = require("./class/items");
 const { failed } = require("./config");
 const { generateToken } = require("./jwt");
 const { insertArchivos, purgeTable } = require("./sql");
-const { reading, pathChanger, isEmpty } = require("./helpers");
+const { reading, pathChanger, isEmpty, getRecursive, getToday } = require("./helpers");
 
 module.exports.getFoldersAndFiles = getFoldersAndFiles;
 module.exports.makeRecursive = makeRecursive;
@@ -192,8 +192,14 @@ async function status(req, res) {
   res.end();
 }
 
-function insertAll(req, res) {
-  console.log("insert");
+async function insertAll(req, res) {
+  let result = await getRecursive(process.env.PATHTOFOLDER).then();
+  const bulk = [];
+  result.files.forEach(file => {
+    const filename = file.split('/')[file.split('/').length - 1]
+    bulk.push([filename, file.split(filename)[0] || '/' , getToday(), 1])
+  })
+  console.log(bulk)
 }
 
 async function purge(req, res) {
