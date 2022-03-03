@@ -1,8 +1,10 @@
 const fs = require("fs");
 
+module.exports.isEmpty = isEmpty;
 module.exports.reading = reading;
 module.exports.pathChanger = pathChanger;
-module.exports;
+module.exports.getRecursive = getRecursive;
+
 /**
  * Reads recursive a folder and returns an array with 2 items containing folders and files
  * @param path
@@ -16,7 +18,10 @@ function reading(path) {
     if (fs.lstatSync(path + recurso).isDirectory()) folders.push(recurso);
     else files.push(recurso);
   });
-  return [folders, files];
+  return {
+    folders: folders,
+    files: files,
+  };
 }
 
 /**
@@ -27,4 +32,37 @@ function reading(path) {
  */
 function pathChanger(path, query) {
   return path + query + "/";
+}
+
+/**
+ * Checks if the object is empty {}.
+ * @param obj
+ * @returns
+ */
+function isEmpty(obj) {
+  return Object.keys(obj).length === 0;
+}
+
+/**
+ * Reads recursive folder and object with folders and files.
+ * @param path 
+ * @returns 
+ */
+async function getRecursive(path) {
+  const folders = [];
+  const files = [];
+  let items = await wrench.readdirSyncRecursive(path);
+  items.forEach((item) => {
+    if (fs.lstatSync(process.env.PATHTOFOLDER + item).isFile()) {
+      item = item.split(/\\/g).join("/");
+      files.push(item);
+    } else if (fs.lstatSync(process.env.PATHTOFOLDER + item).isDirectory()) {
+      item = item = item.split(/\\/g).join("/");
+      folders.push(item);
+    }
+  });
+  return {
+    folders: folders,
+    files: files,
+  };
 }
