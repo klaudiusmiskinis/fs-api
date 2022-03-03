@@ -5,6 +5,7 @@ module.exports.isEmpty = isEmpty;
 module.exports.reading = reading;
 module.exports.pathChanger = pathChanger;
 module.exports.getRecursive = getRecursive;
+module.exports.getToday = getToday;
 
 /**
  * Reads recursive a folder and returns an array with 2 items containing folders and files
@@ -66,4 +67,12 @@ async function getRecursive(path) {
     folders: folders,
     files: files,
   };
+}
+
+function getToday(){
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, '0');
+  var mm = String(today.getMonth() + 1).padStart(2, '0');
+  var yyyy = today.getFullYear();
+  return mm + '/' + dd + '/' + yyyy;
 }
