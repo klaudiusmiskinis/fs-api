@@ -1,5 +1,4 @@
 const fs = require("fs");
-const wrench = require("wrench");
 const Items = require("./class/items");
 const { failed } = require("./config");
 const { generateToken } = require("./jwt");
@@ -9,6 +8,7 @@ const { reading, pathChanger, isEmpty } = require("./helpers");
 module.exports.getFoldersAndFiles = getFoldersAndFiles;
 module.exports.makeRecursive = makeRecursive;
 module.exports.deleteItems = deleteItems;
+module.exports.insertAll = insertAll;
 module.exports.download = download;
 module.exports.status = status;
 module.exports.upload = upload;
@@ -192,7 +192,9 @@ async function status(req, res) {
   res.end();
 }
 
-function insertAll(req, res) {}
+function insertAll(req, res) {
+  console.log("insert");
+}
 
 async function purge(req, res) {
   if (!isEmpty(req.params)) {
