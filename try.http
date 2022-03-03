@@ -10,4 +10,4 @@ GET http://localhost:3001/check
 
 ###
 
-POST http://localhost:3001/purge/archivos
+POST http://localhost:3001/purge/versiones
