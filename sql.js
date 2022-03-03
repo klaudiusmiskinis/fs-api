@@ -51,28 +51,15 @@ module.exports.selectAllVersions = selectAllVersions = () =>
   })();
 
 /**
- * Purges the table archivos.
+ * Purges the table given by a parameter.
  */
-module.exports.cleanArchivos = cleanArchivos = () =>
+module.exports.purgeTable = purgeTable = (table) =>
   (async () => {
     const conn = mysql.createConnection(connection);
     try {
       const query = util.promisify(conn.query).bind(conn);
-      return await query("TRUNCATE TABLE archivos");
-    } finally {
-      conn.end();
-    }
-  })();
-
-/**
- * Purges the table versiones.
- */
-module.exports.cleanVersiones = cleanVersiones = () =>
-  (async () => {
-    const conn = mysql.createConnection(connection);
-    try {
-      const query = util.promisify(conn.query).bind(conn);
-      return await query("TRUNCATE TABLE versiones");
+      const string = mysql.format('TRUNCATE TABLE ?', [table]).split("''").join("'");
+      return await query(string);
     } finally {
       conn.end();
     }
