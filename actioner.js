@@ -2,11 +2,10 @@ const fs = require("fs");
 const Items = require("./class/items");
 const { failed } = require("./config");
 const { generateToken } = require("./jwt");
-const { insertArchivos, purgeTable } = require("./sql");
+const { insertArchivos, purgeTable, rename } = require("./sql");
 const {
   isEmpty,
   reading,
-  getToday,
   pathChanger,
   getRecursive,
   iso,
@@ -207,3 +206,14 @@ async function login(req, res) {
   });
   res.end();
 }
+
+/** SELECT PathAndName
+ *  const b = await selectByPathAndName('Documentos RRHH/07 Pruebas/asd/prueba2/', 'holaA.txt');
+ *  console.log(b.shift())
+ */
+
+/** RENAME
+ * let b = await selectByPathAndName('Documentos RRHH/07 Pruebas/asd/prueba2/', 'holaA.txt');
+ * b = b.shift();
+ * await rename(b.idArchivo, 'hola.txt');
+ */
