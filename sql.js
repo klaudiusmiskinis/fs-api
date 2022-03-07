@@ -73,12 +73,12 @@ module.exports.purgeTable = purgeTable = (table) =>
  */
 module.exports.insertArchivos = insertArchivos = (archivos) =>
   (async () => {
-    const conn = mysql.createConnection(connection);
+    const conn = mysql.createConnection(connection); 
     try {
       const query = util.promisify(conn.query).bind(conn);
       const string = mysql
         .format(
-          "INSERT INTO archivos(nombre, ruta, fechaCreacion, versionActual) VALUES ?",
+          "INSERT INTO archivos(nombre, ruta, fechaCreacion, ultimaVersion) VALUES ?",
           [archivos]
         )
         .split("''")
