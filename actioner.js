@@ -9,6 +9,7 @@ const {
   getToday,
   pathChanger,
   getRecursive,
+  iso,
 } = require("./helpers");
 
 module.exports.getFoldersAndFiles = getFoldersAndFiles;
@@ -172,7 +173,7 @@ async function insertAll(req, res) {
   console.log(result.files.length);
   result.files.forEach((file) => {
     const filename = file.split("/")[file.split("/").length - 1];
-    bulk.push([filename, file.split(filename)[0] || "/", getToday(), 1]);
+    bulk.push([filename, file.split(filename)[0] || "/", iso(), 1]);
   });
   await insertArchivos(bulk);
   res.json({
