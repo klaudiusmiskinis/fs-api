@@ -73,13 +73,67 @@ module.exports.purgeTable = purgeTable = (table) =>
  */
 module.exports.insertArchivos = insertArchivos = (archivos) =>
   (async () => {
-    const conn = mysql.createConnection(connection); 
+    const conn = mysql.createConnection(connection);
     try {
       const query = util.promisify(conn.query).bind(conn);
       const string = mysql
         .format(
           "INSERT INTO archivos(nombre, ruta, fechaCreacion, ultimaVersion) VALUES ?",
           [archivos]
+        )
+        .split("''")
+        .join("'");
+      return await query(string);
+    } finally {
+      conn.end();
+    }
+  })();
+
+module.exports.newFile = newFile = (name, path, date, lastVersion) =>
+  (async () => {
+    const conn = mysql.createConnection(connection);
+    try {
+      const query = util.promisify(conn.query).bind(conn);
+      const string = mysql
+        .format(
+          "INSERT INTO archivos(nombre, ruta, fechaCreacion, ultimaVersion) VALUES ?",
+          [name, path, date, lastVersion]
+        )
+        .split("''")
+        .join("'");
+      return await query(string);
+    } finally {
+      conn.end();
+    }
+  })();
+
+module.exports.rename = rename = (idFile, newName) =>
+  (async () => {
+    const conn = mysql.createConnection(connection);
+    try {
+      const query = util.promisify(conn.query).bind(conn);
+      const string = mysql
+        .format("UPDATE archivos SET nombre = ? WHERE archivos.idArchivo = ?", [
+          newName,
+          idFile,
+        ])
+        .split("''")
+        .join("'");
+      return await query(string);
+    } finally {
+      conn.end();
+    }
+  })();
+
+module.exports.selectByPathAndName = selectByPathAndName = (path, name) =>
+  (async () => {
+    const conn = mysql.createConnection(connection);
+    try {
+      const query = util.promisify(conn.query).bind(conn);
+      const string = mysql
+        .format(
+          "SELECT `idArchivo` FROM `archivos` WHERE ruta = ? AND nombre = ?",
+          [path, name]
         )
         .split("''")
         .join("'");
