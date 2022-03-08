@@ -2,7 +2,7 @@ const fs = require("fs");
 const Items = require("./class/items");
 const { failed } = require("./config");
 const { generateToken } = require("./jwt");
-const { insertArchivos, purgeTable, rename } = require("./sql");
+const { insertArchivos, purgeTable, rename, newFile } = require("./sql");
 const {
   isEmpty,
   reading,
@@ -148,6 +148,7 @@ async function upload(req, res) {
             req.files.file.name.split(".").length - 1
           ];
       }
+      await newFile([req.files.file.name, req.query.path || '' + '/', iso(), 1]);
       await req.files.file.mv(fullPath + req.files.file.name);
     } else if (req.query.folder) {
       fullPath = fullPath + req.query.folder;
