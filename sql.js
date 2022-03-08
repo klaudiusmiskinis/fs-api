@@ -94,16 +94,9 @@ module.exports.newFile = newFile = (file) =>
     const conn = mysql.createConnection(connection);
     try {
       const query = util.promisify(conn.query).bind(conn);
-      console.log( mysql
-        .format(
-          "INSERT INTO archivos(nombre, ruta, fechaCreacion, ultimaVersion) VALUES ?",
-          [file]
-        )
-        .split("'")
-        .join(""))
       const string = mysql
         .format(
-          "INSERT INTO archivos(nombre, ruta, fechaCreacion, ultimaVersion) VALUES ?",
+          "INSERT INTO archivos(nombre, ruta, fechaCreacion, ultimaVersion) VALUES (?)",
           [file]
         )
         .split("''")
