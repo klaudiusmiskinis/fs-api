@@ -89,15 +89,22 @@ module.exports.insertArchivos = insertArchivos = (archivos) =>
     }
   })();
 
-module.exports.newFile = newFile = (name, path, date, lastVersion) =>
+module.exports.newFile = newFile = (file) =>
   (async () => {
     const conn = mysql.createConnection(connection);
     try {
       const query = util.promisify(conn.query).bind(conn);
+      console.log( mysql
+        .format(
+          "INSERT INTO archivos(nombre, ruta, fechaCreacion, ultimaVersion) VALUES ?",
+          [file]
+        )
+        .split("'")
+        .join(""))
       const string = mysql
         .format(
           "INSERT INTO archivos(nombre, ruta, fechaCreacion, ultimaVersion) VALUES ?",
-          [name, path, date, lastVersion]
+          [file]
         )
         .split("''")
         .join("'");
@@ -112,11 +119,6 @@ module.exports.rename = rename = (idFile, newName) =>
     const conn = mysql.createConnection(connection);
     try {
       const query = util.promisify(conn.query).bind(conn);
-      console.log(mysql
-        .format("UPDATE archivos SET nombre = ? WHERE archivos.idArchivo = ?", [
-          newName,
-          idFile,
-        ]))
       const string = mysql
         .format("UPDATE archivos SET nombre = ? WHERE archivos.idArchivo = ?", [
           newName,
@@ -142,7 +144,6 @@ module.exports.selectByPathAndName = selectByPathAndName = (path, name) =>
         )
         .split("''")
         .join("'");
-      console.log('asd')
       return await query(string);
     } finally {
       conn.end();
