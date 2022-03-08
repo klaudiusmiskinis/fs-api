@@ -148,7 +148,12 @@ async function upload(req, res) {
             req.files.file.name.split(".").length - 1
           ];
       }
-      await newFile([req.files.file.name, req.query.path || '' + '/', iso(), 1]);
+      await newFile([
+        req.files.file.name,
+        req.query.path || "" + "/",
+        iso(),
+        1,
+      ]);
       await req.files.file.mv(fullPath + req.files.file.name);
     } else if (req.query.folder) {
       fullPath = fullPath + req.query.folder;
@@ -156,15 +161,15 @@ async function upload(req, res) {
     } else if (req.query.edit && req.query.to) {
       await fs.renameSync(fullPath + req.query.edit, fullPath + req.query.to);
     }
+    res.status(200).json({
+      success: true,
+    });
+    res.end();
   } catch (e) {
     console.log(e);
     res.status(200).json(failed);
     res.end();
   }
-  res.status(200).json({
-    success: true,
-  });
-  res.end();
 }
 
 async function insertAll(req, res) {
