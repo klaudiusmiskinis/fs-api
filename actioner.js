@@ -109,7 +109,7 @@ async function deleteItems(req, res) {
   try {
     if (req.query.file) {
       fullPath = fullPath + "/" + req.query.file;
-      const file = await selectByPathAndName(
+      let file = await selectByPathAndName(
         req.query.path | "/",
         req.query.file
       );
