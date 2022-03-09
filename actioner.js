@@ -2,7 +2,14 @@ const fs = require("fs");
 const Items = require("./class/items");
 const { failed } = require("./config");
 const { generateToken } = require("./jwt");
-const { insertArchivos, purgeTable, rename, newFile } = require("./sql");
+const {
+  insertArchivos,
+  purgeTable,
+  rename,
+  newFile,
+  updateDelete,
+  selectAllFiles,
+} = require("./sql");
 const {
   isEmpty,
   reading,
@@ -102,6 +109,12 @@ async function deleteItems(req, res) {
   try {
     if (req.query.file) {
       fullPath = fullPath + "/" + req.query.file;
+      const file = await selectByPathAndName(
+        req.query.path | "/",
+        req.query.file
+      );
+      file = file.shift();
+      await updateDelete(iso(), file.idArchivo);
       await fs.unlinkSync(fullPath);
     } else if (req.query.folder) {
       fullPath = fullPath + "/" + req.query.folder;
@@ -133,7 +146,6 @@ function download(req, res) {
  *
  */
 async function upload(req, res) {
-  console.log(req.query, req.files);
   let fullPath = process.env.PATHTOFOLDER;
   if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
   try {
@@ -148,17 +160,18 @@ async function upload(req, res) {
             req.files.file.name.split(".").length - 1
           ];
       }
-      await newFile([
-        req.files.file.name,
-        req.query.path || "" + "/",
-        iso(),
-        1,
-      ]);
+      await newFile([req.files.file.name, req.query.path || "/", iso(), 1]);
       await req.files.file.mv(fullPath + req.files.file.name);
     } else if (req.query.folder) {
       fullPath = fullPath + req.query.folder;
       await fs.mkdirSync(fullPath);
     } else if (req.query.edit && req.query.to) {
+      let file = await selectByPathAndName(
+        req.query.path || "/",
+        req.query.edit
+      );
+      file = file.shift();
+      await rename(file.idArchivo, req.query.to);
       await fs.renameSync(fullPath + req.query.edit, fullPath + req.query.to);
     }
     res.status(200).json({
@@ -216,10 +229,4 @@ async function login(req, res) {
 /** SELECT PathAndName
  *  const b = await selectByPathAndName('Documentos RRHH/07 Pruebas/asd/prueba2/', 'holaA.txt');
  *  console.log(b.shift())
- */
-
-/** RENAME
- * let b = await selectByPathAndName('Documentos RRHH/07 Pruebas/asd/prueba2/', 'holaA.txt');
- * b = b.shift();
- * await rename(b.idArchivo, 'hola.txt');
  */
