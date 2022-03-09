@@ -70,15 +70,15 @@ async function getRecursive(path) {
   };
 }
 
-function getToday(){
+function getToday() {
   var today = new Date();
-  var dd = String(today.getDate()).padStart(2, '0');
-  var mm = String(today.getMonth() + 1).padStart(2, '0');
+  var dd = String(today.getDate()).padStart(2, "0");
+  var mm = String(today.getMonth() + 1).padStart(2, "0");
   var yyyy = today.getFullYear();
-  return mm + '/' + dd + '/' + yyyy;
+  return mm + "/" + dd + "/" + yyyy;
 }
 
-function iso(){
+function iso() {
   const today = new Date();
   return today.toISOString();
 }
