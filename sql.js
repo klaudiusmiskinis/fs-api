@@ -65,7 +65,7 @@ module.exports.purgeTable = purgeTable = async (table) => {
 };
 
 /**
- * Makes a massive insert into table archivos.
+ * Makes a massive insert into table archivos with a bulked parameter. Example: [[],[]]
  */
 module.exports.insertArchivos = insertArchivos = async (archivos) => {
   const conn = mysql.createConnection(connection);
@@ -143,10 +143,10 @@ module.exports.selectByPathAndName = selectByPathAndName = async (
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
-      .format(
-        "SELECT idArchivo FROM archivos WHERE ruta = ? AND nombre = ?",
-        [path, name]
-      )
+      .format("SELECT idArchivo FROM archivos WHERE ruta = ? AND nombre = ?", [
+        path,
+        name,
+      ])
       .split("''")
       .join("'");
     return await query(string);
@@ -155,14 +155,14 @@ module.exports.selectByPathAndName = selectByPathAndName = async (
   }
 };
 
-module.exports.updateDelete = updateDelete = async (date, name) => {
+module.exports.updateDelete = updateDelete = async (date, idFile) => {
   const conn = mysql.createConnection(connection);
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
       .format(
-        "  UPDATE archivos SET eliminado= 1,fechaEliminado= ? WHERE idArchivo = ?",
-        [path, name]
+        "UPDATE archivos SET eliminado = 1, fechaEliminado = ? WHERE idArchivo = ?",
+        [date, idFile]
       )
       .split("''")
       .join("'");
