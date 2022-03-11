@@ -22,7 +22,6 @@ module.exports.getFoldersAndFiles = getFoldersAndFiles;
 module.exports.makeRecursive = makeRecursive;
 module.exports.deleteItems = deleteItems;
 module.exports.insertAll = insertAll;
-module.exports.download = download;
 module.exports.upload = upload;
 module.exports.check = check;
 module.exports.login = login;
@@ -99,9 +98,6 @@ function getFoldersAndFiles(req, res) {
   res.end();
 }
 
-/**
- *
- */
 async function deleteItems(req, res) {
   console.log(req.query);
   let fullPath = process.env.PATHTOFOLDER;
@@ -114,8 +110,8 @@ async function deleteItems(req, res) {
         req.query.file
       );
       file = file.shift();
-      await updateDelete(iso(), file.idArchivo);
       await fs.unlinkSync(fullPath);
+      await updateDelete(iso(), file.idArchivo);
     } else if (req.query.folder) {
       fullPath = fullPath + "/" + req.query.folder;
       if (fullPath.includes("//")) fullPath = fullPath.split("//").join("/");
@@ -132,19 +128,6 @@ async function deleteItems(req, res) {
   res.end();
 }
 
-/**
- *
- */
-function download(req, res) {
-  let fullPath = process.env.PATHTOFOLDER;
-  if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
-  res.download(fullPath + req.query.download);
-  res.end();
-}
-
-/**
- *
- */
 async function upload(req, res) {
   let fullPath = process.env.PATHTOFOLDER;
   if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
@@ -215,9 +198,6 @@ async function purge(req, res) {
   }
 }
 
-/**
- *
- */
 async function login(req, res) {
   console.log(req.body);
   res.status(200).json({
@@ -225,8 +205,3 @@ async function login(req, res) {
   });
   res.end();
 }
-
-/** SELECT PathAndName
- *  const b = await selectByPathAndName('Documentos RRHH/07 Pruebas/asd/prueba2/', 'holaA.txt');
- *  console.log(b.shift())
- */
