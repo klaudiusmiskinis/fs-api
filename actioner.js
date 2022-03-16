@@ -129,7 +129,7 @@ async function deleteItems(req, res) {
 }
 
 async function upload(req, res) {
-  console.log('Upload', req.query, req.files.file)
+  console.log('Upload', req.query, req.files)
   let fullPath = process.env.PATHTOFOLDER;
   if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
   try {
