@@ -161,7 +161,7 @@ module.exports.updateDelete = updateDelete = async (date, idFile) => {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
       .format(
-        "UPDATE archivos SET eliminado = 1, fechaEliminado = ? WHERE idArchivo = ?",
+        "UPDATE archivos SET eliminado = 1, fechaEliminado = ?, ultimaVersion = 0 WHERE idArchivo = ?",
         [date, idFile]
       )
       .split("''")
