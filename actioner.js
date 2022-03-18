@@ -6,7 +6,7 @@ const {
   purgeTable,
   rename,
   newFile,
-  updateDelete
+  updateDelete,
 } = require("./sql");
 const {
   isEmpty,
@@ -127,7 +127,7 @@ async function deleteItems(req, res) {
 }
 
 async function upload(req, res) {
-  console.log('Upload', req.query, req.files)
+  console.log("Upload", req.query, req.files);
   let fullPath = process.env.PATHTOFOLDER;
   if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
   try {
@@ -142,7 +142,17 @@ async function upload(req, res) {
             req.files.file.name.split(".").length - 1
           ];
       }
-      await newFile([req.files.file.name, req.query.path || "/", iso(), 1]);
+      if (req.query.fileRelated) {
+        let file = await selectByPathAndName(
+          req.query.path || "/",
+          req.query.fileRelated
+        );
+        file = file.shift();
+        await ultimaVersionToZero(file.idArchivo);
+        await newFileWithFather([req.files.file.name, req.query.path || "/", file.idArchivo, iso(), 1]);
+      } else {
+        await newFile([req.files.file.name, req.query.path || "/", iso(), 1]);
+      }
       await req.files.file.mv(fullPath + req.files.file.name);
     } else if (req.query.folder) {
       fullPath = fullPath + req.query.folder;
