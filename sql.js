@@ -101,13 +101,13 @@ module.exports.newFile = newFile = async (file) => {
   }
 };
 
-module.exports.newFile = newFile = async (file) => {
+module.exports.newFileWithFather = newFileWithFather = async (file) => {
   const conn = mysql.createConnection(connection);
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
       .format(
-        "INSERT INTO archivos(nombre, ruta, fechaCreacion, ultimaVersion) VALUES (?)",
+        "INSERT INTO archivos(nombre, ruta, idPadre, fechaCreacion, ultimaVersion) VALUES (?)",
         [file]
       )
       .split("''")
@@ -147,6 +147,24 @@ module.exports.selectByPathAndName = selectByPathAndName = async (
         path,
         name,
       ])
+      .split("''")
+      .join("'");
+    return await query(string);
+  } finally {
+    conn.end();
+  }
+};
+
+
+module.exports.ultimaVersionToZero = ultimaVersionToZero = async (idFile) => {
+  const conn = mysql.createConnection(connection);
+  try {
+    const query = util.promisify(conn.query).bind(conn);
+    const string = mysql
+      .format(
+        "UPDATE archivos SET ultimaVersion = 0 WHERE idArchivo = ?",
+        [idFile]
+      )
       .split("''")
       .join("'");
     return await query(string);
