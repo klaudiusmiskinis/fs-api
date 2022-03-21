@@ -20,6 +20,7 @@ module.exports.getFoldersAndFiles = getFoldersAndFiles;
 module.exports.makeRecursive = makeRecursive;
 module.exports.deleteItems = deleteItems;
 module.exports.insertAll = insertAll;
+module.exports.download = download;
 module.exports.upload = upload;
 module.exports.check = check;
 module.exports.login = login;
@@ -74,7 +75,7 @@ async function makeRecursive(req, res) {
 }
 
 /**
- *
+ * Returns a JSON with a array of folders and files.
  */
 function getFoldersAndFiles(req, res) {
   let fullPath = process.env.PATHTOFOLDER;
@@ -96,6 +97,9 @@ function getFoldersAndFiles(req, res) {
   res.end();
 }
 
+/**
+ * Removes an item (file or folder) by name and path. Also updates the table where it is registered to set it to removed.
+ */
 async function deleteItems(req, res) {
   console.log(req.query);
   let fullPath = process.env.PATHTOFOLDER;
@@ -149,7 +153,13 @@ async function upload(req, res) {
         );
         file = file.shift();
         await ultimaVersionToZero(file.idArchivo);
-        await newFileWithFather([req.files.file.name, req.query.path || "/", file.idArchivo, iso(), 1]);
+        await newFileWithFather([
+          req.files.file.name,
+          req.query.path || "/",
+          file.idArchivo,
+          iso(),
+          1,
+        ]);
       } else {
         await newFile([req.files.file.name, req.query.path || "/", iso(), 1]);
       }
@@ -213,4 +223,16 @@ async function login(req, res) {
     success: true,
   });
   res.end();
+}
+
+function download(req, res) {
+  try {
+    let fullPath = process.env.PATHTOFOLDER;
+    if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
+    const file = fullPath + req.query.download
+    res.download(file);
+    res.end();
+  } catch (error) {
+    console.log(error);
+  }
 }
