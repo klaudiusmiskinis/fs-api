@@ -6,6 +6,7 @@ const {
   insertAll,
   check,
   deleteItems,
+  download,
   upload,
   login,
   purge,
@@ -28,12 +29,7 @@ app.use(cors());
 /* GETs */
 app.get("/", getFoldersAndFiles);
 app.get("/recursive", makeRecursive);
-app.get("/download", (req, res) => {
-  let fullPath = process.env.PATHTOFOLDER;
-  if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
-  res.download(fullPath, req.query.download);
-  res.end();
-});
+app.get("/download", download);
 app.get("/check", check);
 
 /* POSTs */
