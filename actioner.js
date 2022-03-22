@@ -2,9 +2,9 @@ const fs = require("fs");
 const Items = require("./class/items");
 const { failed } = require("./config");
 const {
-  insertArchivos,
-  purgeTable,
-  rename,
+  insertBulkedFiles,
+  truncateTable,
+  updateName,
   newFile,
   updateDelete,
 } = require("./sql");
@@ -152,8 +152,8 @@ async function upload(req, res) {
           req.query.fileRelated
         );
         file = file.shift();
-        await ultimaVersionToZero(file.idArchivo);
-        await newFileWithFather([
+        await updateVersion(file.idArchivo);
+        await insertFileWithParent([
           req.files.file.name,
           req.query.path || "/",
           file.idArchivo,
@@ -173,7 +173,7 @@ async function upload(req, res) {
         req.query.edit
       );
       file = file.shift();
-      await rename(file.idArchivo, req.query.to);
+      await updateName(file.idArchivo, req.query.to);
       await fs.renameSync(fullPath + req.query.edit, fullPath + req.query.to);
     }
     res.status(200).json({
@@ -195,7 +195,7 @@ async function insertAll(req, res) {
     const filename = file.split("/")[file.split("/").length - 1];
     bulk.push([filename, file.split(filename)[0] || "/", iso(), 1]);
   });
-  await insertArchivos(bulk);
+  await insertBulkedFiles(bulk);
   res.json({
     success: true,
     message: "Bulked insert in table archivos",
@@ -204,7 +204,7 @@ async function insertAll(req, res) {
 
 async function purge(req, res) {
   if (!isEmpty(req.params)) {
-    await purgeTable(req.params.table);
+    await truncateTable(req.params.table);
     res.status(200).json({
       success: true,
       message: "table cleared " + req.params.table,
