@@ -136,8 +136,6 @@ async function upload(req, res) {
   if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
   try {
     if (req.files) {
-      fullPath = decodeURI(fullPath);
-      fullPath = fullPath.split("%20").join(" ");
       if (req.query.updateName) {
         req.files.file.name =
           req.query.updateName +
@@ -146,7 +144,7 @@ async function upload(req, res) {
             req.files.file.name.split(".").length - 1
           ];
       }
-      if (req.query.fileRelated) {
+      if (req.query.fileRelated && req.query.fileRelated != "null") {
         let file = await selectByPathAndName(
           req.query.path || "/",
           req.query.fileRelated
@@ -161,7 +159,7 @@ async function upload(req, res) {
           1,
         ]);
       } else {
-        await newFile([req.files.file.name, req.query.path || "/", iso(), 1]);
+        await insertFile([req.files.file.name, req.query.path || "/", iso(), 1]);
       }
       await req.files.file.mv(fullPath + req.files.file.name);
     } else if (req.query.folder) {
