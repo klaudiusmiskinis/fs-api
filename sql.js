@@ -22,6 +22,22 @@ module.exports.selectAll = selectAll = async () => {
   }
 };
 
+module.exports.selectIdAndNombre = selectIdAndNombre = async () => {
+  const conn = mysql.createConnection(connection);
+  try {
+    const query = util.promisify(conn.query).bind(conn);
+    const string = mysql
+      .format(
+        "SELECT id, nombre FROM archivos"
+      )
+      .split("''")
+      .join("'");
+    return await query(string);
+  } finally {
+    conn.end();
+  }
+};
+
 module.exports.selectByPathAndName = selectByPathAndName = async (
   path,
   name
