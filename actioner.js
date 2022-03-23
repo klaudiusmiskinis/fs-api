@@ -7,6 +7,7 @@ const {
   updateName,
   newFile,
   updateDelete,
+  insertFileWithParenAndtReason,
 } = require("./sql");
 const {
   isEmpty,
@@ -136,7 +137,9 @@ async function upload(req, res) {
   if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
   try {
     if (req.files) {
+      console.log('Archivo')
       if (req.query.updateName) {
+        console.log('Renombrar')
         req.files.file.name =
           req.query.updateName +
           "." +
@@ -145,21 +148,53 @@ async function upload(req, res) {
           ];
       }
       if (req.query.fileRelated && req.query.fileRelated != "null") {
+        console.log('Padre')
         let file = await selectByPathAndName(
           req.query.path || "/",
           req.query.fileRelated
         );
         file = file.shift();
         await updateVersion(file.idArchivo);
-        await insertFileWithParent([
-          req.files.file.name,
-          req.query.path || "/",
-          file.idArchivo,
-          iso(),
-          1,
-        ]);
+        if (req.query.reason) {
+          console.log('Motivo')
+          await insertFileWithParentAndReason([
+            req.files.file.name,
+            req.query.path || "/",
+            file.idArchivo,
+            iso(),
+            1,
+            req.query.reason,
+          ]);
+        } else {
+          console.log('Sin motivo')
+          await insertFileWithParent([
+            req.files.file.name,
+            req.query.path || "/",
+            file.idArchivo,
+            iso(),
+            1,
+          ]);
+        }
       } else {
-        await insertFile([req.files.file.name, req.query.path || "/", iso(), 1]);
+        console.log('Sin padre')
+        if (req.query.reason) {
+          console.log('Con motivo')
+          await insertFileWithReason([
+            req.files.file.name,
+            req.query.path || "/",
+            iso(),
+            1,
+            req.query.reason,
+          ]);
+        } else {
+          console.log('Sin motivo')
+          await insertFile([
+            req.files.file.name,
+            req.query.path || "/",
+            iso(),
+            1,
+          ]);
+        }
       }
       await req.files.file.mv(fullPath + req.files.file.name);
     } else if (req.query.folder) {
@@ -227,7 +262,7 @@ function download(req, res) {
   try {
     let fullPath = process.env.PATHTOFOLDER;
     if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
-    const file = fullPath + req.query.download
+    const file = fullPath + req.query.download;
     res.download(file);
     res.end();
   } catch (error) {
