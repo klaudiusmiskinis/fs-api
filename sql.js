@@ -98,6 +98,40 @@ module.exports.insertFile = insertFile = async (file) => {
   }
 };
 
+module.exports.insertFileWithReason = insertFileWithReason = async (file) => {
+  const conn = mysql.createConnection(connection);
+  try {
+    const query = util.promisify(conn.query).bind(conn);
+    const string = mysql
+      .format(
+        "INSERT INTO archivos(nombre, ruta, fechaCreacion, ultimaVersion, motivo) VALUES (?)",
+        [file]
+      )
+      .split("''")
+      .join("'");
+    return await query(string);
+  } finally {
+    conn.end();
+  }
+};
+
+module.exports.insertFileWithParentAndReason = insertFileWithParentAndReason = async (file) => {
+  const conn = mysql.createConnection(connection);
+  try {
+    const query = util.promisify(conn.query).bind(conn);
+    const string = mysql
+      .format(
+        "INSERT INTO archivos(nombre, ruta, idPadre, fechaCreacion, ultimaVersion, motivo) VALUES (?)",
+        [file]
+      )
+      .split("''")
+      .join("'");
+    return await query(string);
+  } finally {
+    conn.end();
+  }
+};
+
 module.exports.insertFileWithParent = insertFileWithParent = async (file) => {
   const conn = mysql.createConnection(connection);
   try {
@@ -114,24 +148,6 @@ module.exports.insertFileWithParent = insertFileWithParent = async (file) => {
     conn.end();
   }
 };
-
-module.exports.insertFileWithParenAndtReason = insertFileWithParenAndtReason =
-  async (file) => {
-    const conn = mysql.createConnection(connection);
-    try {
-      const query = util.promisify(conn.query).bind(conn);
-      const string = mysql
-        .format(
-          "INSERT INTO archivos(nombre, ruta, idPadre, fechaCreacion, ultimaVersion) VALUES (?)",
-          [file]
-        )
-        .split("''")
-        .join("'");
-      return await query(string);
-    } finally {
-      conn.end();
-    }
-  };
 
 /* UPDATE */
 module.exports.updateName = updateName = async (idFile, newName) => {
