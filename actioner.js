@@ -137,9 +137,7 @@ async function upload(req, res) {
   if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
   try {
     if (req.files) {
-      console.log('Archivo')
       if (req.query.updateName) {
-        console.log('Renombrar')
         req.files.file.name =
           req.query.updateName +
           "." +
@@ -148,7 +146,7 @@ async function upload(req, res) {
           ];
       }
       if (req.query.fileRelated && req.query.fileRelated != "null") {
-        console.log('Padre')
+        console.log("Padre");
         let file = await selectByPathAndName(
           req.query.path || "/",
           req.query.fileRelated
@@ -156,7 +154,6 @@ async function upload(req, res) {
         file = file.shift();
         await updateVersion(file.idArchivo);
         if (req.query.reason) {
-          console.log('Motivo')
           await insertFileWithParentAndReason([
             req.files.file.name,
             req.query.path || "/",
@@ -166,7 +163,6 @@ async function upload(req, res) {
             req.query.reason,
           ]);
         } else {
-          console.log('Sin motivo')
           await insertFileWithParent([
             req.files.file.name,
             req.query.path || "/",
@@ -176,9 +172,7 @@ async function upload(req, res) {
           ]);
         }
       } else {
-        console.log('Sin padre')
         if (req.query.reason) {
-          console.log('Con motivo')
           await insertFileWithReason([
             req.files.file.name,
             req.query.path || "/",
@@ -187,7 +181,6 @@ async function upload(req, res) {
             req.query.reason,
           ]);
         } else {
-          console.log('Sin motivo')
           await insertFile([
             req.files.file.name,
             req.query.path || "/",
