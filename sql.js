@@ -38,6 +38,22 @@ module.exports.selectIdAndNombre = selectIdAndNombre = async () => {
   }
 };
 
+module.exports.selectAllEliminado = selectAllEliminado = async () => {
+  const conn = mysql.createConnection(connection);
+  try {
+    const query = util.promisify(conn.query).bind(conn);
+    const string = mysql
+      .format(
+        "SELECT * FROM archivos WHERE eliminado = 1"
+      )
+      .split("''")
+      .join("'");
+    return await query(string);
+  } finally {
+    conn.end();
+  }
+};
+
 module.exports.selectByPathAndName = selectByPathAndName = async (
   path,
   name
