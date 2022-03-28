@@ -27,9 +27,7 @@ module.exports.selectIdAndNombre = selectIdAndNombre = async () => {
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
-      .format(
-        "SELECT id, nombre FROM archivos"
-      )
+      .format("SELECT id, nombre FROM archivos")
       .split("''")
       .join("'");
     return await query(string);
@@ -43,9 +41,7 @@ module.exports.selectAllEliminado = selectAllEliminado = async () => {
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
-      .format(
-        "SELECT * FROM archivos WHERE eliminado = 1"
-      )
+      .format("SELECT * FROM archivos WHERE eliminado = 1")
       .split("''")
       .join("'");
     return await query(string);
@@ -147,22 +143,23 @@ module.exports.insertFileWithReason = insertFileWithReason = async (file) => {
   }
 };
 
-module.exports.insertFileWithParentAndReason = insertFileWithParentAndReason = async (file) => {
-  const conn = mysql.createConnection(connection);
-  try {
-    const query = util.promisify(conn.query).bind(conn);
-    const string = mysql
-      .format(
-        "INSERT INTO archivos(nombre, ruta, idPadre, fechaCreacion, ultimaVersion, motivo) VALUES (?)",
-        [file]
-      )
-      .split("''")
-      .join("'");
-    return await query(string);
-  } finally {
-    conn.end();
-  }
-};
+module.exports.insertFileWithParentAndReason = insertFileWithParentAndReason =
+  async (file) => {
+    const conn = mysql.createConnection(connection);
+    try {
+      const query = util.promisify(conn.query).bind(conn);
+      const string = mysql
+        .format(
+          "INSERT INTO archivos(nombre, ruta, idPadre, fechaCreacion, ultimaVersion, motivo) VALUES (?)",
+          [file]
+        )
+        .split("''")
+        .join("'");
+      return await query(string);
+    } finally {
+      conn.end();
+    }
+  };
 
 module.exports.insertFileWithParent = insertFileWithParent = async (file) => {
   const conn = mysql.createConnection(connection);
