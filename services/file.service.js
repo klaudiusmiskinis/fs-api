@@ -2,7 +2,7 @@ const { db } = require("../helpers/initialize");
 
 module.exports = {
   getAll,
-  getById,
+  getFile,
   create,
   update,
   bulked,
@@ -14,51 +14,39 @@ async function getAll() {
   return await db.File.findAll();
 }
 
-async function getById(id) {
-  return await getFile(id);
-}
-
 async function truncate() {
   await db.File.destroy({ truncate: true });
 }
 
-async function create(params) {
-  if (await db.File.findOne({ where: { email: params.id } })) {
-    throw 'Id "' + params.id + '" is already registered';
+async function create(attributes) {
+  if (await getFile(attributes)) {
+    throw "File already exists";
   }
-  const file = new db.File(params);
+  const file = new db.File(attributes);
   await file.save();
 }
 
 async function bulked(files) {
-  db.File.bulkCreate(files, {
+  if (!files) throw "Files empty or without data";
+  if (files.length < 1) throw "Files empty";
+  await db.File.bulkCreate(files, {
     ignoreDuplicates: true,
   }).then(() => console.log("Files data have been inserted"));
 }
 
-async function update(id, params) {
-  const file = await getFile(id);
-
-  const usernameChanged = params.id && file.id !== params.id;
-  if (
-    usernameChanged &&
-    (await db.File.findOne({ where: { id: params.id, path: params.path } }))
-  ) {
-    throw 'File "' + params.id + '" is already taken';
-  }
-
-  Object.assign(file, params);
-  await file.save();
+async function update(attributes, conditions) {
+  const file = db.File.update(attributes, { where: conditions });
+  if (!file) throw "File not found";
 }
 
-async function _delete(id) {
-  const file = await getFile(id);
+async function _delete(conditions) {
+  const file = await getFile(conditions);
   if (!file) throw "File not found";
   await file.destroy();
 }
 
-async function getFile(id) {
-  const file = await db.File.findByPk(id);
+async function getFile(conditions) {
+  const file = db.File.findOne({ where: conditions });
   if (!file) throw "File not found";
   return file;
 }
