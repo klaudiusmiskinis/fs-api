@@ -17,9 +17,7 @@ const fileupload = require("express-fileupload");
 const bodyParser = require("body-parser");
 const express = require("express");
 const cors = require("cors");
-const {
-  getFile,
-} = require("./services/file.service");
+const { getFile } = require("./services/file.service");
 const app = express();
 
 /* Configuration */
@@ -37,8 +35,8 @@ app.get("/check", check);
 app.get("/test", async (req, res) => {
   const conditions = {
     name: "asda.csv",
-    path: "/"
-  }
+    path: "/",
+  };
   const b = await getFile(conditions);
   console.log(b.dataValues);
 });
