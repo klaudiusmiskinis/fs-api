@@ -15,7 +15,7 @@ const {
   iso,
 } = require("../helpers");
 const { failed } = require("../config/obj");
-const { bulked, truncate } = require("../services/file.service");
+const { bulked, truncate, getFile } = require("../services/file.service");
 
 module.exports.getFoldersAndFiles = getFoldersAndFiles;
 module.exports.makeRecursive = makeRecursive;
@@ -112,7 +112,7 @@ async function deleteItems(req, res) {
         req.query.path | "/",
         req.query.file
       );
-      file = file.shift();
+      console.log(file.dataValues);
       await fs.unlinkSync(fullPath);
       await updateDelete(iso(), file.idArchivo);
     } else if (req.query.folder) {
@@ -146,12 +146,13 @@ async function upload(req, res) {
           ];
       }
       if (req.query.fileRelated && req.query.fileRelated != "null") {
-        console.log("Padre");
-        let file = await selectByPathAndName(
-          req.query.path || "/",
-          req.query.fileRelated
-        );
-        file = file.shift();
+        let params = {
+          path: req.query.path || "/",
+          name: req.query.fileRelated,
+        };
+        let file = await getFile(params);
+        file = file.dataValues
+        console.log(file)
         await updateVersion(file.idArchivo);
         if (req.query.reason) {
           await insertFileWithParentAndReason([
