@@ -25,13 +25,8 @@ function model(sequelize) {
   };
 
   const options = {
-    defaultScope: {
-      attributes: { exclude: ["passwordHash"] },
-    },
-    scopes: {
-      withHash: { attributes: {} },
-    },
+    timestamps: false,
   };
 
-  return sequelize.define("file", attributes, options);
+  return sequelize.define("File", attributes, options);
 }
