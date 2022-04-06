@@ -10,7 +10,7 @@ const {
   upload,
   login,
   purge,
-} = require("./actioner");
+} = require("./controllers/actioner");
 const methodOverride = require("method-override");
 const { extended, method } = require("./config");
 const fileupload = require("express-fileupload");
