@@ -1,12 +1,5 @@
 const fs = require("fs");
 const Items = require("../models/items");
-// insertBulkedFiles,
-// truncateTable,
-// updateName,
-// newFile,
-// updateDelete,
-// insertFileWithParenAndtReason,
-
 const {
   isEmpty,
   reading,
@@ -137,7 +130,7 @@ async function deleteItems(req, res) {
 
 async function upload(req, res) {
   const query = req.query;
-  const files = files;
+  const files = req.files;
   console.log("Upload", query, files);
   let fullPath = process.env.PATHTOFOLDER;
   if (query.path) fullPath = pathChanger(fullPath, query.path);
