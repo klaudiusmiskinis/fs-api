@@ -1,7 +1,7 @@
 require("dotenv").config();
 const util = require("util");
 const mysql = require("mysql2");
-const connection = {
+module.exports.connection = {
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PWD,
@@ -55,10 +55,7 @@ module.exports.selectAllFilesByPath = selectAllByPath = async (file) => {
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
-      .format(
-        "SELECT * FROM files WHERE path = ?",
-        [file]
-      )
+      .format("SELECT * FROM files WHERE path = ?", [file])
       .split("''")
       .join("'");
     return await query(string);
@@ -72,10 +69,7 @@ module.exports.selectAllFilesByPath = selectRemovedByPath = async (file) => {
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
-      .format(
-        "SELECT * FROM files WHERE path = ? AND isRemoved = 1",
-        [file]
-      )
+      .format("SELECT * FROM files WHERE path = ? AND isRemoved = 1", [file])
       .split("''")
       .join("'");
     return await query(string);
@@ -92,10 +86,7 @@ module.exports.selectByPathAndName = selectByPathAndName = async (
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
-      .format("SELECT id FROM files WHERE path = ? AND name = ?", [
-        path,
-        name,
-      ])
+      .format("SELECT id FROM files WHERE path = ? AND name = ?", [path, name])
       .split("''")
       .join("'");
     return await query(string);
@@ -218,10 +209,7 @@ module.exports.updateName = updateName = async (idFile, newName) => {
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
-      .format("UPDATE files SET name = ? WHERE files.id = ?", [
-        newName,
-        idFile,
-      ])
+      .format("UPDATE files SET name = ? WHERE files.id = ?", [newName, idFile])
       .split("''")
       .join("'");
     return await query(string);
@@ -235,9 +223,7 @@ module.exports.updateVersion = updateVersion = async (idFile) => {
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
-      .format("UPDATE files SET isLastVersion = 0 WHERE id = ?", [
-        idFile,
-      ])
+      .format("UPDATE files SET isLastVersion = 0 WHERE id = ?", [idFile])
       .split("''")
       .join("'");
     return await query(string);
