@@ -1,14 +1,12 @@
 const fs = require("fs");
 const Items = require("../models/items");
-const { failed } = require("../config");
-const {
-  insertBulkedFiles,
-  truncateTable,
-  updateName,
-  newFile,
-  updateDelete,
-  insertFileWithParenAndtReason,
-} = require("../SQL/sql");
+// insertBulkedFiles,
+// truncateTable,
+// updateName,
+// newFile,
+// updateDelete,
+// insertFileWithParenAndtReason,
+
 const {
   isEmpty,
   reading,
@@ -16,6 +14,8 @@ const {
   getRecursive,
   iso,
 } = require("../helpers");
+const { failed } = require("../config/obj");
+const { bulked, truncate } = require("../services/file.service");
 
 module.exports.getFoldersAndFiles = getFoldersAndFiles;
 module.exports.makeRecursive = makeRecursive;
@@ -219,9 +219,15 @@ async function insertAll(req, res) {
   console.log(result.files.length);
   result.files.forEach((file) => {
     const filename = file.split("/")[file.split("/").length - 1];
-    bulk.push([filename, file.split(filename)[0] || "/", iso(), 1]);
+    const bulkFile = {
+      name: filename,
+      path: file.split(filename)[0] || "/",
+      createdDate: iso(),
+      isLastVersion: 1,
+    };
+    bulk.push(bulkFile);
   });
-  await insertBulkedFiles(bulk);
+  await bulked(bulk);
   res.json({
     success: true,
     message: "Bulked insert in table archivos",
@@ -229,18 +235,11 @@ async function insertAll(req, res) {
 }
 
 async function purge(req, res) {
-  if (!isEmpty(req.params)) {
-    await truncateTable(req.params.table);
-    res.status(200).json({
-      success: true,
-      message: "table cleared " + req.params.table,
-    });
-  } else {
-    res.status(200).json({
-      success: false,
-      message: "Table " + req.params.table + " not found",
-    });
-  }
+  await truncate();
+  res.status(200).json({
+    success: true,
+    message: "table cleared " + req.params.table,
+  });
 }
 
 async function login(req, res) {
