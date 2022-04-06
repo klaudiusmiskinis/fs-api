@@ -10,24 +10,24 @@ const connection = {
 
 /* SELECTS */
 /**
- * Selects all the files from table archivos.
+ * Selects all the files from table files.
  */
 module.exports.selectAll = selectAll = async () => {
   const conn = mysql.createConnection(connection);
   try {
     const query = util.promisify(conn.query).bind(conn);
-    return await query("SELECT * FROM archivos");
+    return await query("SELECT * FROM files");
   } finally {
     conn.end();
   }
 };
 
-module.exports.selectIdAndNombre = selectIdAndNombre = async () => {
+module.exports.selectIdAndName = selectIdAndName = async () => {
   const conn = mysql.createConnection(connection);
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
-      .format("SELECT id, nombre FROM archivos")
+      .format("SELECT id, Name FROM files")
       .split("''")
       .join("'");
     return await query(string);
@@ -36,12 +36,46 @@ module.exports.selectIdAndNombre = selectIdAndNombre = async () => {
   }
 };
 
-module.exports.selectAllEliminado = selectAllEliminado = async () => {
+module.exports.selectAllRemoved = selectAllRemoved = async () => {
   const conn = mysql.createConnection(connection);
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
-      .format("SELECT * FROM archivos WHERE eliminado = 1")
+      .format("SELECT * FROM files WHERE isRemoved = 1")
+      .split("''")
+      .join("'");
+    return await query(string);
+  } finally {
+    conn.end();
+  }
+};
+
+module.exports.selectAllFilesByPath = selectAllByPath = async (file) => {
+  const conn = mysql.createConnection(connection);
+  try {
+    const query = util.promisify(conn.query).bind(conn);
+    const string = mysql
+      .format(
+        "SELECT * FROM files WHERE path = ?",
+        [file]
+      )
+      .split("''")
+      .join("'");
+    return await query(string);
+  } finally {
+    conn.end();
+  }
+};
+
+module.exports.selectAllFilesByPath = selectRemovedByPath = async (file) => {
+  const conn = mysql.createConnection(connection);
+  try {
+    const query = util.promisify(conn.query).bind(conn);
+    const string = mysql
+      .format(
+        "SELECT * FROM files WHERE path = ? AND isRemoved = 1",
+        [file]
+      )
       .split("''")
       .join("'");
     return await query(string);
@@ -58,7 +92,7 @@ module.exports.selectByPathAndName = selectByPathAndName = async (
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
-      .format("SELECT idArchivo FROM archivos WHERE ruta = ? AND nombre = ?", [
+      .format("SELECT id FROM files WHERE path = ? AND name = ?", [
         path,
         name,
       ])
@@ -90,16 +124,16 @@ module.exports.truncateTable = truncateTable = async (table) => {
 
 /* INSERTS */
 /**
- * Makes a massive insert into table archivos with a bulked parameter. Parameter format: [[],[]]
+ * Makes a massive insert into table files with a bulked parameter. Parameter format: [[],[]]
  */
-module.exports.insertBulkedFiles = insertBulkedFiles = async (archivos) => {
+module.exports.insertBulkedFiles = insertBulkedFiles = async (files) => {
   const conn = mysql.createConnection(connection);
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
       .format(
-        "INSERT INTO archivos(nombre, ruta, fechaCreacion, ultimaVersion) VALUES ?",
-        [archivos]
+        "INSERT INTO files(name, path, created_date, isLastVersion) VALUES ?",
+        [files]
       )
       .split("''")
       .join("'");
@@ -115,7 +149,7 @@ module.exports.insertFile = insertFile = async (file) => {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
       .format(
-        "INSERT INTO archivos(nombre, ruta, fechaCreacion, ultimaVersion) VALUES (?)",
+        "INSERT INTO files(name, path, created_date, isLastVersion) VALUES (?)",
         [file]
       )
       .split("''")
@@ -132,7 +166,7 @@ module.exports.insertFileWithReason = insertFileWithReason = async (file) => {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
       .format(
-        "INSERT INTO archivos(nombre, ruta, fechaCreacion, ultimaVersion, motivo) VALUES (?)",
+        "INSERT INTO files(name, path, created_date, isLastVersion, reason) VALUES (?)",
         [file]
       )
       .split("''")
@@ -150,7 +184,7 @@ module.exports.insertFileWithParentAndReason = insertFileWithParentAndReason =
       const query = util.promisify(conn.query).bind(conn);
       const string = mysql
         .format(
-          "INSERT INTO archivos(nombre, ruta, idPadre, fechaCreacion, ultimaVersion, motivo) VALUES (?)",
+          "INSERT INTO files(name, path, idParent, created_date, isLastVersion, reason) VALUES (?)",
           [file]
         )
         .split("''")
@@ -167,7 +201,7 @@ module.exports.insertFileWithParent = insertFileWithParent = async (file) => {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
       .format(
-        "INSERT INTO archivos(nombre, ruta, idPadre, fechaCreacion, ultimaVersion) VALUES (?)",
+        "INSERT INTO files(name, path, idParent, created_date, isLastVersion) VALUES (?)",
         [file]
       )
       .split("''")
@@ -184,7 +218,7 @@ module.exports.updateName = updateName = async (idFile, newName) => {
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
-      .format("UPDATE archivos SET nombre = ? WHERE archivos.idArchivo = ?", [
+      .format("UPDATE files SET name = ? WHERE files.id = ?", [
         newName,
         idFile,
       ])
@@ -201,7 +235,7 @@ module.exports.updateVersion = updateVersion = async (idFile) => {
   try {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
-      .format("UPDATE archivos SET ultimaVersion = 0 WHERE idArchivo = ?", [
+      .format("UPDATE files SET isLastVersion = 0 WHERE id = ?", [
         idFile,
       ])
       .split("''")
@@ -218,7 +252,7 @@ module.exports.updateDelete = updateDelete = async (date, idFile) => {
     const query = util.promisify(conn.query).bind(conn);
     const string = mysql
       .format(
-        "UPDATE archivos SET eliminado = 1, fechaEliminado = ?, ultimaVersion = 0 WHERE idArchivo = ?",
+        "UPDATE files SET isRemoved = 1, removed_date = ?, isLastVersion = 0 WHERE id = ?",
         [date, idFile]
       )
       .split("''")
