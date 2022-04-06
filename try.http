@@ -10,8 +10,12 @@ POST http://localhost:3001/recursive/all
 
 ###
 
-POST http://localhost:3001/purge/files
+POST http://localhost:3001/purge
 
 ###
 
 GET http://localhost:3001/download?download=ipsum.png
+
+###
+
+GET http://localhost:3001/test
