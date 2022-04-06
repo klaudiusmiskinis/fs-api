@@ -17,6 +17,7 @@ const fileupload = require("express-fileupload");
 const bodyParser = require("body-parser");
 const express = require("express");
 const cors = require("cors");
+const { getAll, getById } = require("./services/file.service");
 const app = express();
 
 /* Configuration */
@@ -31,11 +32,14 @@ app.get("/", getFoldersAndFiles);
 app.get("/recursive", makeRecursive);
 app.get("/download", download);
 app.get("/check", check);
+app.get("/test", async (req, res) => {
+  console.log(await getById(1));
+});
 
 /* POSTs */
 app.post("/", upload);
 app.post("/login", login);
-app.post("/purge/:table", purge);
+app.post("/purge", purge);
 app.post("/recursive/all", insertAll);
 
 /* DELETEs */
