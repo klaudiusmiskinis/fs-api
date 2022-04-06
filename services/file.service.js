@@ -22,6 +22,7 @@ async function create(attributes) {
   if (await getFile(attributes)) {
     throw "File already exists";
   }
+  console.log(attributes)
   const file = new db.File(attributes);
   await file.save();
 }
@@ -35,7 +36,7 @@ async function bulked(files) {
 }
 
 async function update(attributes, conditions) {
-  const file = db.File.update(attributes, { where: conditions });
+  const file = await db.File.update(attributes, { where: conditions });
   if (!file) throw "File not found";
 }
 
