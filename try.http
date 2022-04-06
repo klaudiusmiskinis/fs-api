@@ -6,7 +6,7 @@ POST http://localhost:3001/recursive/all
 
 ###
 
-POST http://localhost:3001/purge/archivos
+POST http://localhost:3001/purge/files
 
 ###
 
