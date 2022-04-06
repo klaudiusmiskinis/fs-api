@@ -15,7 +15,13 @@ const {
   iso,
 } = require("../helpers");
 const { failed } = require("../config/obj");
-const { bulked, truncate, getFile } = require("../services/file.service");
+const {
+  bulked,
+  truncate,
+  getFile,
+  update,
+  create,
+} = require("../services/file.service");
 
 module.exports.getFoldersAndFiles = getFoldersAndFiles;
 module.exports.makeRecursive = makeRecursive;
@@ -102,21 +108,19 @@ function getFoldersAndFiles(req, res) {
  * Removes an item (file or folder) by name and path. Also updates the table where it is registered to set it to removed.
  */
 async function deleteItems(req, res) {
-  console.log(req.query);
+  const query = req.query;
+  console.log(query);
   let fullPath = process.env.PATHTOFOLDER;
-  if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
+  if (query.path) fullPath = pathChanger(fullPath, query.path);
   try {
-    if (req.query.file) {
-      fullPath = fullPath + "/" + req.query.file;
-      let file = await selectByPathAndName(
-        req.query.path | "/",
-        req.query.file
-      );
+    if (query.file) {
+      fullPath = fullPath + "/" + query.file;
+      let file = await selectByPathAndName(query.path | "/", query.file);
       console.log(file.dataValues);
       await fs.unlinkSync(fullPath);
       await updateDelete(iso(), file.idArchivo);
-    } else if (req.query.folder) {
-      fullPath = fullPath + "/" + req.query.folder;
+    } else if (query.folder) {
+      fullPath = fullPath + "/" + query.folder;
       if (fullPath.includes("//")) fullPath = fullPath.split("//").join("/");
       await fs.rmSync(fullPath, { recursive: true, force: true });
     }
@@ -132,76 +136,90 @@ async function deleteItems(req, res) {
 }
 
 async function upload(req, res) {
-  console.log("Upload", req.query, req.files);
+  const query = req.query;
+  const files = files;
+  console.log("Upload", query, files);
   let fullPath = process.env.PATHTOFOLDER;
-  if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
+  if (query.path) fullPath = pathChanger(fullPath, query.path);
   try {
-    if (req.files) {
-      if (req.query.updateName) {
-        req.files.file.name =
-          req.query.updateName +
+    if (files) {
+      if (query.updateName) {
+        files.file.name =
+          query.updateName +
           "." +
-          req.files.file.name.split(".")[
-            req.files.file.name.split(".").length - 1
-          ];
+          files.file.name.split(".")[files.file.name.split(".").length - 1];
       }
-      if (req.query.fileRelated && req.query.fileRelated != "null") {
-        let params = {
-          path: req.query.path || "/",
-          name: req.query.fileRelated,
+      if (query.fileRelated && query.fileRelated != "null") {
+        const params = {
+          path: query.path || "/",
+          name: query.fileRelated,
         };
-        let file = await getFile(params);
-        file = file.dataValues
-        console.log(file)
-        await updateVersion(file.idArchivo);
-        if (req.query.reason) {
-          await insertFileWithParentAndReason([
-            req.files.file.name,
-            req.query.path || "/",
-            file.idArchivo,
-            iso(),
-            1,
-            req.query.reason,
-          ]);
+        const file = await getFile(params);
+        const attributes = {
+          isLastVersion: 0,
+        };
+        const conditions = {
+          id: file.dataValues.id,
+        };
+        await update(attributes, conditions);
+        if (query.reason) {
+          const newFile = {
+            name: files.file.name,
+            path: query.path || "/",
+            idParent: file.dataValues.id,
+            createdDate: iso(),
+            isLastVersion: 1,
+            reason: query.reason,
+          };
+          await create(newFile);
         } else {
-          await insertFileWithParent([
-            req.files.file.name,
-            req.query.path || "/",
-            file.idArchivo,
-            iso(),
-            1,
-          ]);
+          const newFile = {
+            name: files.file.name,
+            path: query.path || "/",
+            idParent: file.dataValues.id,
+            createdDate: iso(),
+            isLastVersion: 1,
+          };
+          await create(newFile);
         }
       } else {
-        if (req.query.reason) {
-          await insertFileWithReason([
-            req.files.file.name,
-            req.query.path || "/",
-            iso(),
-            1,
-            req.query.reason,
-          ]);
+        if (query.reason) {
+          const newFile = {
+            name: files.file.name,
+            path: query.path || "/",
+            createdDate: iso(),
+            isLastVersion: 1,
+            reason: query.reason,
+          };
+          await create(newFile);
         } else {
-          await insertFile([
-            req.files.file.name,
-            req.query.path || "/",
-            iso(),
-            1,
-          ]);
+          const newFile = {
+            name: files.file.name,
+            path: query.path || "/",
+            createdDate: iso(),
+            isLastVersion: 1,
+          };
+          await create(newFile);
         }
       }
-      await req.files.file.mv(fullPath + req.files.file.name);
-    } else if (req.query.folder) {
-      fullPath = fullPath + req.query.folder;
+      await files.file.mv(fullPath + files.file.name);
+    } else if (query.folder) {
+      fullPath = fullPath + query.folder;
       await fs.mkdirSync(fullPath);
-    } else if (req.query.edit && req.query.to) {
-      let file = await selectByPathAndName(
-        req.query.path || "/",
-        req.query.edit
-      );
-      file = file.shift();
-      await updateName(file.idArchivo, req.query.to);
-      await fs.renameSync(fullPath + req.query.edit, fullPath + req.query.to);
+    } else if (query.edit && query.to) {
+      const params = {
+        path: query.path || "/",
+        name: query.edit,
+      };
+      const file = await getFile(params);
+      const attributes = {
+        name: query.to,
+      };
+      const conditions = {
+        id: file.dataValues.id,
+      };
+      await update(attributes, conditions);
+      await fs.renameSync(fullPath + query.edit, fullPath + query.to);
     }
     res.status(200).json({
       success: true,
