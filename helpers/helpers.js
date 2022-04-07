@@ -3,13 +3,12 @@ const wrench = require("wrench");
 
 module.exports.isEmpty = isEmpty;
 module.exports.reading = reading;
-module.exports.getToday = getToday;
 module.exports.pathChanger = pathChanger;
 module.exports.getRecursive = getRecursive;
-module.exports.iso = iso;
+module.exports.dateToday = dateToday;
 
 /**
- * Reads recursive a folder and returns an array with 2 items containing folders and files
+ * Reads recursive a folder and returns an array with 2 items containing folders and files.
  * @param path
  * @returns
  */
@@ -28,7 +27,7 @@ function reading(path) {
 }
 
 /**
- * Adds a query to the path and end with a slash
+ * Adds a query to the path and end with a slash.
  * @param path
  * @param query
  * @returns
@@ -70,15 +69,12 @@ async function getRecursive(path) {
   };
 }
 
-function getToday() {
-  var today = new Date();
-  var dd = String(today.getDate()).padStart(2, "0");
-  var mm = String(today.getMonth() + 1).padStart(2, "0");
-  var yyyy = today.getFullYear();
-  return mm + "/" + dd + "/" + yyyy;
-}
 
-function iso() {
+/**
+ * Returns todays date.
+ * @returns date
+ */
+function dateToday() {
   const today = new Date();
   return today.toISOString();
 }
