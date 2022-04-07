@@ -1,12 +1,11 @@
 const fs = require("fs");
-const Items = require("../models/items");
 const {
   isEmpty,
   reading,
   pathChanger,
   getRecursive,
-  iso,
-} = require("../helpers");
+  dateToday,
+} = require("../helpers/helpers");
 const { failed } = require("../config/obj");
 const {
   bulked,
@@ -15,6 +14,14 @@ const {
   update,
   create,
 } = require("../services/file.service");
+const {
+  deleteFile,
+  onlyName,
+  pathAndName,
+  setDateToName,
+  splitDoubleSlash,
+} = require("../helpers/contructors");
+const Items = require("../models/items");
 
 module.exports.getFoldersAndFiles = getFoldersAndFiles;
 module.exports.makeRecursive = makeRecursive;
@@ -42,25 +49,16 @@ function check(req, res) {
     filesWithoutExtension.push(item.split(".")[0]);
   });
   const maxDate = new Date(Math.max.apply(null, filesWithoutExtension));
-  const obj = {
-    file: maxDate.getTime() + ".json",
-  };
-  res.status(200).json(obj);
+  res.status(200).json(latestJsonFile(maxDate.getTime()));
   res.end();
 }
 
-/**
- *
- */
 async function makeRecursive(req, res) {
   let result = await getRecursive(process.env.PATHTOFOLDER);
   try {
     const time = new Date();
     const items = new Items(result.files, result.folder);
-    await fs.writeFileSync(
-      "data/" + time.getTime().toString() + ".json",
-      JSON.stringify(items, null, 4)
-    );
+    await fs.writeFileSync(setDateToName(time), JSON.stringify(items, null, 4));
   } catch (e) {
     console.log(e);
     res.status(200).json(failed);
@@ -102,19 +100,20 @@ function getFoldersAndFiles(req, res) {
  */
 async function deleteItems(req, res) {
   const query = req.query;
-  console.log(query);
   let fullPath = process.env.PATHTOFOLDER;
   if (query.path) fullPath = pathChanger(fullPath, query.path);
   try {
     if (query.file) {
       fullPath = fullPath + "/" + query.file;
-      let file = await selectByPathAndName(query.path | "/", query.file);
-      console.log(file.dataValues);
       await fs.unlinkSync(fullPath);
-      await updateDelete(iso(), file.idArchivo);
+      const params = pathAndName(query.path, query.file);
+      let file = await getFile(params);
+      const attributes = deleteFile();
+      const conditions = onlyId(file.dataValues.id);
+      await update(attributes, conditions);
     } else if (query.folder) {
       fullPath = fullPath + "/" + query.folder;
-      if (fullPath.includes("//")) fullPath = fullPath.split("//").join("/");
+      fullPath = splitDoubleSlash(fullPath);
       await fs.rmSync(fullPath, { recursive: true, force: true });
     }
   } catch (e) {
@@ -143,24 +142,17 @@ async function upload(req, res) {
           files.file.name.split(".")[files.file.name.split(".").length - 1];
       }
       if (query.fileRelated && query.fileRelated != "null") {
-        const params = {
-          path: query.path || "/",
-          name: query.fileRelated,
-        };
+        const params = pathAndName(query.path, query.fileRelated);
         const file = await getFile(params);
-        const attributes = {
-          isLastVersion: 0,
-        };
-        const conditions = {
-          id: file.dataValues.id,
-        };
+        const attributes = onlyLastVersion(false);
+        const conditions = onlyId(file.dataValues.id);
         await update(attributes, conditions);
         if (query.reason) {
           const newFile = {
             name: files.file.name,
             path: query.path || "/",
             idParent: file.dataValues.id,
-            createdDate: iso(),
+            createdDate: dateToday(),
             isLastVersion: 1,
             reason: query.reason,
           };
@@ -170,7 +162,7 @@ async function upload(req, res) {
             name: files.file.name,
             path: query.path || "/",
             idParent: file.dataValues.id,
-            createdDate: iso(),
+            createdDate: dateToday(),
             isLastVersion: 1,
           };
           await create(newFile);
@@ -180,7 +172,7 @@ async function upload(req, res) {
           const newFile = {
             name: files.file.name,
             path: query.path || "/",
-            createdDate: iso(),
+            createdDate: dateToday(),
             isLastVersion: 1,
             reason: query.reason,
           };
@@ -189,7 +181,7 @@ async function upload(req, res) {
           const newFile = {
             name: files.file.name,
             path: query.path || "/",
-            createdDate: iso(),
+            createdDate: dateToday(),
             isLastVersion: 1,
           };
           await create(newFile);
@@ -200,17 +192,10 @@ async function upload(req, res) {
       fullPath = fullPath + query.folder;
       await fs.mkdirSync(fullPath);
     } else if (query.edit && query.to) {
-      const params = {
-        path: query.path || "/",
-        name: query.edit,
-      };
+      const params = pathAndName(query.path, query.edit);
       const file = await getFile(params);
-      const attributes = {
-        name: query.to,
-      };
-      const conditions = {
-        id: file.dataValues.id,
-      };
+      const attributes = onlyName(query.to);
+      const conditions = onlyId(file.dataValues.id);
       await update(attributes, conditions);
       await fs.renameSync(fullPath + query.edit, fullPath + query.to);
     }
@@ -228,13 +213,12 @@ async function upload(req, res) {
 async function insertAll(req, res) {
   let result = await getRecursive(process.env.PATHTOFOLDER).then();
   const bulk = [];
-  console.log(result.files.length);
   result.files.forEach((file) => {
     const filename = file.split("/")[file.split("/").length - 1];
     const bulkFile = {
       name: filename,
       path: file.split(filename)[0] || "/",
-      createdDate: iso(),
+      createdDate: dateToday(),
       isLastVersion: 1,
     };
     bulk.push(bulkFile);
@@ -268,7 +252,6 @@ function download(req, res) {
     if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
     const file = fullPath + req.query.download;
     res.download(file);
-    res.end();
   } catch (error) {
     console.log(error);
   }
