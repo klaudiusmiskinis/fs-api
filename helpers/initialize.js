@@ -1,11 +1,5 @@
 const { Sequelize } = require("sequelize");
 const { connection } = require("../config/db");
-require("dotenv").config();
-
-const db = {};
-module.exports = {
-  db: db,
-};
 
 initialize();
 
@@ -18,6 +12,5 @@ async function initialize() {
       dialect: "mysql",
     }
   );
-  db.File = require("../models/file")(sequelize);
-  // await sequelize.sync();
+  module.exports.File = require("../models/file")(sequelize);
 }
