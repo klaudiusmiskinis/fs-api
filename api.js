@@ -17,7 +17,7 @@ const fileupload = require("express-fileupload");
 const bodyParser = require("body-parser");
 const express = require("express");
 const cors = require("cors");
-const { getFile } = require("./services/file.service");
+const { getFile, getRecursiveDown, getRecursiveUp } = require("./services/file.service");
 const app = express();
 
 /* Configuration */
@@ -34,11 +34,10 @@ app.get("/download", download);
 app.get("/check", check);
 app.get("/test", async (req, res) => {
   const conditions = {
-    name: "asda.csv",
-    path: "/",
+    idParent: 10
   };
-  const b = await getFile(conditions);
-  console.log(b.dataValues);
+  const files = await getRecursiveUp(conditions);
+  console.log(files);
 });
 
 /* POSTs */
