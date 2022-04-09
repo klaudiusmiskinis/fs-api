@@ -1,6 +1,5 @@
 const fs = require("fs");
 const {
-  isEmpty,
   reading,
   pathChanger,
   getRecursive,
@@ -18,8 +17,8 @@ const {
   deleteFile,
   onlyName,
   pathAndName,
-  setDateToName,
   splitDoubleSlash,
+  setDateToName,
 } = require("../helpers/contructors");
 const Items = require("../models/items");
 
@@ -46,7 +45,8 @@ function check(req, res) {
     res.end();
   }
   files.forEach((item) => {
-    filesWithoutExtension.push(item.split(".")[0]);
+    const filename = item.split(".")[0];
+    filesWithoutExtension.push(filename);
   });
   const maxDate = new Date(Math.max.apply(null, filesWithoutExtension));
   res.status(200).json(latestJsonFile(maxDate.getTime()));
@@ -136,10 +136,9 @@ async function upload(req, res) {
   try {
     if (files) {
       if (query.updateName) {
-        files.file.name =
-          query.updateName +
-          "." +
-          files.file.name.split(".")[files.file.name.split(".").length - 1];
+        const fileNameQuery =
+          files.file.name.split(".")[fileNameQuery.split(".").length - 1];
+        files.file.name = query.updateName + "." + fileNameQuery;
       }
       if (query.fileRelated && query.fileRelated != "null") {
         const params = pathAndName(query.path, query.fileRelated);
