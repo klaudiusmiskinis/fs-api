@@ -6,6 +6,10 @@ module.exports.reading = reading;
 module.exports.pathChanger = pathChanger;
 module.exports.getRecursive = getRecursive;
 module.exports.dateToday = dateToday;
+module.exports.setDateToName = setDateToName;
+module.exports.splitDoubleSlash = splitDoubleSlash;
+module.exports.getNameFromRoute = getNameFromRoute;
+module.exports.latestJsonFile = latestJsonFile;
 
 /**
  * Reads recursive a folder and returns an array with 2 items containing folders and files.
@@ -69,7 +73,6 @@ async function getRecursive(path) {
   };
 }
 
-
 /**
  * Returns todays date.
  * @returns date
@@ -78,3 +81,34 @@ function dateToday() {
   const today = new Date();
   return today.toISOString();
 }
+
+/**
+ * Transforms a date into a string with .json appended.
+ * @param {*} date
+ * @returns string
+ */
+function setDateToName(date) {
+  return "data/" + date.getTime().toString() + ".json";
+}
+
+/**
+ * Replaces double slashes for a single one.
+ * @param {*} string 
+ * @returns string
+ */
+function splitDoubleSlash(string) {
+  return string.split("//").join("/");
+}
+
+/**
+ * Returns an object with file attribute with the file name.
+ * @param {*} date 
+ * @returns object
+ */
+function latestJsonFile(date) {
+  return {
+    file: date + ".json",
+  };
+}
+
+function getNameFromRoute(route) {}

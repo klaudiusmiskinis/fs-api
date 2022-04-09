@@ -2,11 +2,8 @@ const { dateToday } = require("./helpers");
 
 module.exports = {
   deleteFile,
-  latestJsonFile,
-  setDateToName,
   onlyLastVersion,
   pathAndName,
-  splitDoubleSlash,
   onlyName,
   onlyId,
 };
@@ -51,22 +48,4 @@ function onlyLastVersion(isLastVersion) {
       isLastVersion: 0,
     };
   }
-}
-
-function latestJsonFile(date) {
-  return {
-    file: date + ".json",
-  };
-}
-
-function setDateToName(date) {
-  return "data/" + date.getTime().toString() + ".json";
-}
-
-function splitDoubleSlash(string) {
-  return string.split("//").join("/");
-}
-
-function getNameFromRoute(route) {
-  
 }
