@@ -1,4 +1,4 @@
-GET http://localhost:3001/check
+GET http://localhost:3001/
 
 ###
 
