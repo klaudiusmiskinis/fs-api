@@ -21,7 +21,7 @@ function onlyId(id) {
 }
 
 function pathAndName(path, name) {
-  path || "/";
+  if (!path) path = '/'
   return {
     path: path,
     name: name,
