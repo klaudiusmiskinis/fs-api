@@ -21,6 +21,7 @@ const {
   splitDoubleSlash,
   setDateToName,
   onlyId,
+  onlyLastVersion,
 } = require("../helpers/contructors");
 const Items = require("../models/items");
 
@@ -142,7 +143,7 @@ async function upload(req, res) {
     if (files) {
       if (query.updateName) {
         const fileNameQuery =
-          files.file.name.split(".")[fileNameQuery.split(".").length - 1];
+          files.file.name.split(".")[ files.file.name.split(".").length - 1];
         files.file.name = query.updateName + "." + fileNameQuery;
       }
       if (query.fileRelated && query.fileRelated != "null") {
