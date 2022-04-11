@@ -60,10 +60,10 @@ async function getRecursive(path) {
   let items = await wrench.readdirSyncRecursive(path);
   items.forEach((item) => {
     if (fs.lstatSync(process.env.PATHTOFOLDER + item).isFile()) {
-      item = item.split(/\\/g).join("/");
+      item = replaceBackslasWithSlash(item);
       files.push(item);
     } else if (fs.lstatSync(process.env.PATHTOFOLDER + item).isDirectory()) {
-      item = item = item.split(/\\/g).join("/");
+      item = replaceBackslasWithSlash(item);
       folders.push(item);
     }
   });
@@ -93,7 +93,7 @@ function setDateToName(date) {
 
 /**
  * Replaces double slashes for a single one.
- * @param {*} string 
+ * @param {*} string
  * @returns string
  */
 function splitDoubleSlash(string) {
@@ -102,7 +102,7 @@ function splitDoubleSlash(string) {
 
 /**
  * Returns an object with file attribute with the file name.
- * @param {*} date 
+ * @param {*} date
  * @returns object
  */
 function latestJsonFile(date) {
@@ -112,3 +112,7 @@ function latestJsonFile(date) {
 }
 
 function getNameFromRoute(route) {}
+
+function replaceBackslasWithSlash(string) {
+  return string.split(/\\/g).join("/");
+}
