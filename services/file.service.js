@@ -9,6 +9,7 @@ module.exports = {
   truncate,
   getRecursiveDown,
   getRecursiveUp,
+  getAllWhere,
   delete: _delete,
 };
 
@@ -17,6 +18,15 @@ module.exports = {
  */
 async function getAll() {
   return await File.findAll();
+}
+
+/**
+ * Makes a select query to get all the rows by condition given.
+ * @param {*} conditions 
+ * @returns 
+ */
+async function getAllWhere(conditions) {
+  return await File.findAll({ where: conditions });
 }
 
 /**
