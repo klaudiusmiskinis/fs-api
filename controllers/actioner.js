@@ -12,6 +12,7 @@ const {
   getFile,
   update,
   create,
+  getAllWhere,
 } = require("../services/file.service");
 const {
   deleteFile,
@@ -19,6 +20,7 @@ const {
   pathAndName,
   splitDoubleSlash,
   setDateToName,
+  onlyId,
 } = require("../helpers/contructors");
 const Items = require("../models/items");
 
@@ -75,12 +77,15 @@ async function makeRecursive(req, res) {
 /**
  * Returns a JSON with a array of folders and files.
  */
-function getFoldersAndFiles(req, res) {
+async function getFoldersAndFiles(req, res) {
+  let { path } = req.query;
+  if (!path) path = "/";
   let fullPath = process.env.PATHTOFOLDER;
-  let result;
-  if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
+  let result, tempFiles;
+  if (path) fullPath = pathChanger(fullPath, path);
   try {
     result = reading(fullPath);
+    tempFiles = await getAllWhere({ path: path });
   } catch (e) {
     console.log(e);
     res.status(200).json(failed);
@@ -88,9 +93,9 @@ function getFoldersAndFiles(req, res) {
   }
   res.status(200).json({
     success: true,
-    path: req.query.path,
+    path: path,
     folders: result.folders,
-    files: result.files,
+    files: tempFiles,
   });
   res.end();
 }
@@ -145,6 +150,7 @@ async function upload(req, res) {
         const file = await getFile(params);
         const attributes = onlyLastVersion(false);
         const conditions = onlyId(file.dataValues.id);
+        console.log(attributes, conditions)
         await update(attributes, conditions);
         if (query.reason) {
           const newFile = {
@@ -192,6 +198,7 @@ async function upload(req, res) {
       await fs.mkdirSync(fullPath);
     } else if (query.edit && query.to) {
       const params = pathAndName(query.path, query.edit);
+      console.log(params)
       const file = await getFile(params);
       const attributes = onlyName(query.to);
       const conditions = onlyId(file.dataValues.id);
