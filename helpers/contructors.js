@@ -38,6 +38,7 @@ function deleteFile() {
 
 function onlyLastVersion(isLastVersion) {
   if (typeof(isLastVersion) === "undefined") throw "You must provide a parameter";
+  if (typeof(isLastVersion) !== "boolean") throw "You must provide a boolean parameter";
   if (isLastVersion) {
     return {
       isLastVersion: 1,
