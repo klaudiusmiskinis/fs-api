@@ -1,11 +1,11 @@
 const fs = require("fs");
+const { failed } = require("../config/obj");
 const {
   reading,
   pathChanger,
   getRecursive,
   dateToday,
 } = require("../helpers/helpers");
-const { failed } = require("../config/obj");
 const {
   bulked,
   truncate,
@@ -19,71 +19,27 @@ const {
   onlyName,
   pathAndName,
   splitDoubleSlash,
-  setDateToName,
   onlyId,
   onlyLastVersion,
 } = require("../helpers/contructors");
-const Items = require("../models/items");
 
-module.exports.getFoldersAndFiles = getFoldersAndFiles;
-module.exports.makeRecursive = makeRecursive;
-module.exports.deleteItems = deleteItems;
-module.exports.insertAll = insertAll;
+module.exports.getAllByPath = getAllByPath;
 module.exports.download = download;
+module.exports.bulkAll = bulkAll;
+module.exports.remove = remove;
 module.exports.upload = upload;
-module.exports.check = check;
 module.exports.login = login;
 module.exports.purge = purge;
 
 /**
- * Return the lastest file
- */
-function check(req, res) {
-  const filesWithoutExtension = [];
-  let files = [];
-  try {
-    files = fs.readdirSync(__dirname + "/data");
-  } catch (e) {
-    res.status(200).json(failed);
-    res.end();
-  }
-  files.forEach((item) => {
-    const filename = item.split(".")[0];
-    filesWithoutExtension.push(filename);
-  });
-  const maxDate = new Date(Math.max.apply(null, filesWithoutExtension));
-  res.status(200).json(latestJsonFile(maxDate.getTime()));
-  res.end();
-}
-
-async function makeRecursive(req, res) {
-  let result = await getRecursive(process.env.PATHTOFOLDER);
-  try {
-    const time = new Date();
-    const items = new Items(result.files, result.folder);
-    await fs.writeFileSync(setDateToName(time), JSON.stringify(items, null, 4));
-  } catch (e) {
-    console.log(e);
-    res.status(200).json(failed);
-    res.end();
-  }
-  res.status(200).json({
-    success: true,
-    files: result.files,
-    folder: result.folders,
-  });
-  res.end();
-}
-
-/**
  * Returns a JSON with a array of folders and files.
  */
-async function getFoldersAndFiles(req, res) {
+async function getAllByPath(req, res) {
   let { path } = req.query;
   let fullPath = process.env.PATHTOFOLDER;
   let result, tempFiles;
   if (!path) path = "/";
-  if (path.substr(-1) !== '/') path = path + '/'
+  if (path.substr(-1) !== "/") path = path + "/";
   if (path) fullPath = pathChanger(fullPath, path);
   console.log(path, fullPath);
   try {
@@ -106,7 +62,7 @@ async function getFoldersAndFiles(req, res) {
 /**
  * Removes an item (file or folder) by name and path. Also updates the table where it is registered to set it to removed.
  */
-async function deleteItems(req, res) {
+async function remove(req, res) {
   const query = req.query;
   let fullPath = process.env.PATHTOFOLDER;
   if (query.path) fullPath = pathChanger(fullPath, query.path);
@@ -138,7 +94,6 @@ async function deleteItems(req, res) {
 async function upload(req, res) {
   const query = req.query;
   const files = req.files;
-  console.log("Upload", query, files);
   let fullPath = process.env.PATHTOFOLDER;
   if (query.path) fullPath = pathChanger(fullPath, query.path);
   try {
@@ -153,7 +108,6 @@ async function upload(req, res) {
         const file = await getFile(params);
         const attributes = onlyLastVersion(false);
         const conditions = onlyId(file.dataValues.id);
-        console.log(attributes, conditions);
         await update(attributes, conditions);
         if (query.reason) {
           const newFile = {
@@ -219,7 +173,7 @@ async function upload(req, res) {
   }
 }
 
-async function insertAll(req, res) {
+async function bulkAll(req, res) {
   let result = await getRecursive(process.env.PATHTOFOLDER).then();
   const bulk = [];
   result.files.forEach((file) => {
