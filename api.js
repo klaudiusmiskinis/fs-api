@@ -1,24 +1,23 @@
 /* Imports */
 require("dotenv").config();
-const {
-  getFoldersAndFiles,
-  makeRecursive,
-  insertAll,
-  check,
-  deleteItems,
-  download,
-  upload,
-  login,
-  purge,
-} = require("./controllers/actioner");
+
 const methodOverride = require("method-override");
-const { extended, method } = require("./config");
 const fileupload = require("express-fileupload");
 const bodyParser = require("body-parser");
 const express = require("express");
 const cors = require("cors");
-const { getFile, getRecursiveDown, getRecursiveUp } = require("./services/file.service");
 const app = express();
+const { extended, method } = require("./config");
+const { getRecursiveUp } = require("./services/file.service");
+const {
+  download,
+  upload,
+  login,
+  purge,
+  bulkAll,
+  getAllByPath,
+  remove,
+} = require("./controllers/actioner");
 
 /* Configuration */
 app.use(bodyParser.urlencoded(extended));
@@ -28,13 +27,11 @@ app.use(fileupload());
 app.use(cors());
 
 /* GETs */
-app.get("/", getFoldersAndFiles);
-app.get("/recursive", makeRecursive);
+app.get("/", getAllByPath);
 app.get("/download", download);
-app.get("/check", check);
 app.get("/test", async (req, res) => {
   const conditions = {
-    idParent: 10
+    idParent: 10,
   };
   const files = await getRecursiveUp(conditions);
   console.log(files);
@@ -44,10 +41,10 @@ app.get("/test", async (req, res) => {
 app.post("/", upload);
 app.post("/login", login);
 app.post("/purge", purge);
-app.post("/recursive/all", insertAll);
+app.post("/bulk", bulkAll);
 
 /* DELETEs */
-app.delete("/", deleteItems);
+app.delete("/", remove);
 
 /* LISTEN */
 app.listen(process.env.PORT, (err) => {
