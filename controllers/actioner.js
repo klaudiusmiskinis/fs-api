@@ -6,6 +6,7 @@ const {
   getRecursive,
   dateToday,
   replaceBackslasWithSlash,
+  splitDoubleSlash,
 } = require("../helpers/helpers");
 const {
   bulked,
@@ -19,7 +20,6 @@ const {
   deleteFile,
   onlyName,
   pathAndName,
-  splitDoubleSlash,
   onlyId,
   onlyLastVersion,
 } = require("../helpers/contructors");
@@ -42,7 +42,6 @@ async function getAllByPath(req, res) {
   if (!path) path = "/";
   if (path.substr(-1) !== "/") path = path + "/";
   if (path) fullPath = pathChanger(fullPath, path);
-  console.log(path, fullPath);
   try {
     result = reading(fullPath);
     tempFiles = await getAllWhere({ path: path });
@@ -157,7 +156,6 @@ async function upload(req, res) {
       await fs.mkdirSync(fullPath);
     } else if (query.edit && query.to) {
       const params = pathAndName(query.path, query.edit);
-      console.log(params);
       const file = await getFile(params);
       const attributes = onlyName(query.to);
       const conditions = onlyId(file.dataValues.id);
