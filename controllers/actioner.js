@@ -5,6 +5,7 @@ const {
   pathChanger,
   getRecursive,
   dateToday,
+  replaceBackslasWithSlash,
 } = require("../helpers/helpers");
 const {
   bulked,
@@ -69,6 +70,7 @@ async function remove(req, res) {
   try {
     if (query.file) {
       fullPath = fullPath + "/" + query.file;
+      replaceBackslasWithSlash(fullPath)
       await fs.unlinkSync(fullPath);
       const params = pathAndName(query.path, query.file);
       let file = await getFile(params);
