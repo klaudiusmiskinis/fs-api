@@ -80,10 +80,12 @@ async function makeRecursive(req, res) {
  */
 async function getFoldersAndFiles(req, res) {
   let { path } = req.query;
-  if (!path) path = "/";
   let fullPath = process.env.PATHTOFOLDER;
   let result, tempFiles;
+  if (!path) path = "/";
+  if (path.substr(-1) !== '/') path = path + '/'
   if (path) fullPath = pathChanger(fullPath, path);
+  console.log(path, fullPath);
   try {
     result = reading(fullPath);
     tempFiles = await getAllWhere({ path: path });
@@ -143,7 +145,7 @@ async function upload(req, res) {
     if (files) {
       if (query.updateName) {
         const fileNameQuery =
-          files.file.name.split(".")[ files.file.name.split(".").length - 1];
+          files.file.name.split(".")[files.file.name.split(".").length - 1];
         files.file.name = query.updateName + "." + fileNameQuery;
       }
       if (query.fileRelated && query.fileRelated != "null") {
@@ -151,7 +153,7 @@ async function upload(req, res) {
         const file = await getFile(params);
         const attributes = onlyLastVersion(false);
         const conditions = onlyId(file.dataValues.id);
-        console.log(attributes, conditions)
+        console.log(attributes, conditions);
         await update(attributes, conditions);
         if (query.reason) {
           const newFile = {
@@ -199,7 +201,7 @@ async function upload(req, res) {
       await fs.mkdirSync(fullPath);
     } else if (query.edit && query.to) {
       const params = pathAndName(query.path, query.edit);
-      console.log(params)
+      console.log(params);
       const file = await getFile(params);
       const attributes = onlyName(query.to);
       const conditions = onlyId(file.dataValues.id);
