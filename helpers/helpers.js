@@ -10,6 +10,7 @@ module.exports.setDateToName = setDateToName;
 module.exports.splitDoubleSlash = splitDoubleSlash;
 module.exports.getNameFromRoute = getNameFromRoute;
 module.exports.latestJsonFile = latestJsonFile;
+module.exports.replaceBackslasWithSlash = replaceBackslasWithSlash;
 
 /**
  * Reads recursive a folder and returns an array with 2 items containing folders and files.
