@@ -8,7 +8,6 @@ module.exports.getRecursive = getRecursive;
 module.exports.dateToday = dateToday;
 module.exports.setDateToName = setDateToName;
 module.exports.splitDoubleSlash = splitDoubleSlash;
-module.exports.getNameFromRoute = getNameFromRoute;
 module.exports.latestJsonFile = latestJsonFile;
 module.exports.replaceBackslasWithSlash = replaceBackslasWithSlash;
 
@@ -112,7 +111,6 @@ function latestJsonFile(date) {
   };
 }
 
-function getNameFromRoute(route) {}
 
 function replaceBackslasWithSlash(string) {
   return string.split(/\\/g).join("/");
