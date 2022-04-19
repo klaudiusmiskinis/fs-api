@@ -71,7 +71,7 @@ async function remove(req, res) {
       fullPath = fullPath + "/" + query.file;
       fullPath = replaceBackslasWithSlash(fullPath);
       fullPath = splitDoubleSlash(fullPath);
-      await fs.unlinkSync(fullPath);
+      // await fs.unlinkSync(fullPath);
       const params = pathAndName(query.path, query.file);
       let file = await getFile(params);
       const attributes = deleteFile();
@@ -80,7 +80,7 @@ async function remove(req, res) {
     } else if (query.folder) {
       fullPath = fullPath + "/" + query.folder;
       fullPath = splitDoubleSlash(fullPath);
-      await fs.rmSync(fullPath, { recursive: true, force: true });
+      // await fs.rmSync(fullPath, { recursive: true, force: true });
     }
   } catch (e) {
     console.log(e);
