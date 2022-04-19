@@ -72,7 +72,7 @@ async function remove(req, res) {
       fullPath = replaceBackslasWithSlash(fullPath);
       fullPath = splitDoubleSlash(fullPath);
       // await fs.unlinkSync(fullPath);
-      const params = pathAndName(query.path, query.file);
+      const params = pathAndName(isPathValid(query.path), query.file);
       let file = await getFile(params);
       const attributes = deleteFile();
       const conditions = onlyId(file.dataValues.id);
@@ -80,7 +80,7 @@ async function remove(req, res) {
     } else if (query.folder) {
       fullPath = fullPath + "/" + query.folder;
       fullPath = splitDoubleSlash(fullPath);
-      // await fs.rmSync(fullPath, { recursive: true, force: true });
+      await fs.rmSync(fullPath, { recursive: true, force: true });
     }
   } catch (e) {
     console.log(e);
@@ -106,7 +106,7 @@ async function upload(req, res) {
         files.file.name = query.updateName + "." + fileNameQuery;
       }
       if (query.fileRelated && query.fileRelated != "null") {
-        const params = pathAndName(query.path, query.fileRelated);
+        const params = pathAndName(isPathValid(query.path), query.fileRelated);
         const file = await getFile(params);
         const attributes = onlyLastVersion(false);
         const conditions = onlyId(file.dataValues.id);
@@ -156,7 +156,7 @@ async function upload(req, res) {
       fullPath = fullPath + query.folder;
       await fs.mkdirSync(fullPath);
     } else if (query.edit && query.to) {
-      const params = pathAndName(query.path, query.edit);
+      const params = pathAndName(isPathValid(query.path), query.edit);
       const file = await getFile(params);
       const attributes = onlyName(query.to);
       const conditions = onlyId(file.dataValues.id);
