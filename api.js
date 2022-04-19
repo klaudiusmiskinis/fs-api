@@ -8,7 +8,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const { extended, method } = require("./config");
-const { getRecursiveUp } = require("./services/file.service");
+const { getRecursiveUp, getAll } = require("./services/file.service");
 const {
   download,
   upload,
@@ -29,6 +29,9 @@ app.use(cors());
 /* GETs */
 app.get("/", getAllByPath);
 app.get("/download", download);
+app.get('/getAllFiles', async (req, res) => {
+  res.json(await getAll());
+})
 app.get("/test", async (req, res) => {
   const conditions = {
     idParent: 10,
