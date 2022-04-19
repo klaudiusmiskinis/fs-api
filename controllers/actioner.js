@@ -69,7 +69,8 @@ async function remove(req, res) {
   try {
     if (query.file) {
       fullPath = fullPath + "/" + query.file;
-      replaceBackslasWithSlash(fullPath);
+      fullPath = replaceBackslasWithSlash(fullPath);
+      fullPath = splitDoubleSlash(fullPath);
       await fs.unlinkSync(fullPath);
       const params = pathAndName(query.path, query.file);
       let file = await getFile(params);
@@ -113,7 +114,7 @@ async function upload(req, res) {
         if (query.reason) {
           const newFile = {
             name: files.file.name,
-            path: query.path || "/",
+            path: isPathValid(query.path),
             idParent: file.dataValues.id,
             createdDate: dateToday(),
             isLastVersion: 1,
@@ -123,7 +124,7 @@ async function upload(req, res) {
         } else {
           const newFile = {
             name: files.file.name,
-            path: query.path || "/",
+            path: isPathValid(query.path),
             idParent: file.dataValues.id,
             createdDate: dateToday(),
             isLastVersion: 1,
@@ -134,7 +135,7 @@ async function upload(req, res) {
         if (query.reason) {
           const newFile = {
             name: files.file.name,
-            path: query.path || "/",
+            path: isPathValid(query.path),
             createdDate: dateToday(),
             isLastVersion: 1,
             reason: query.reason,
@@ -143,7 +144,7 @@ async function upload(req, res) {
         } else {
           const newFile = {
             name: files.file.name,
-            path: query.path || "/",
+            path: isPathValid(query.path),
             createdDate: dateToday(),
             isLastVersion: 1,
           };
@@ -215,7 +216,12 @@ function download(req, res) {
     if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
     const file = fullPath + req.query.download;
     res.download(file);
-  } catch (error) {
-    console.log(error);
+  } catch (e) {
+    console.log(e);
   }
+}
+
+function isPathValid(path) {
+  if (path) return path + "/";
+  else return "/";
 }
