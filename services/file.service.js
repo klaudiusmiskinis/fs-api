@@ -22,8 +22,8 @@ async function getAll() {
 
 /**
  * Makes a select query to get all the rows by condition given.
- * @param {*} conditions 
- * @returns 
+ * @param {*} conditions
+ * @returns
  */
 async function getAllWhere(conditions) {
   return await File.findAll({ where: conditions });
@@ -54,7 +54,7 @@ async function bulked(files) {
   if (files.length < 1) throw "Files empty";
   await File.bulkCreate(files, {
     ignoreDuplicates: true,
-  }).then(() => console.log("Files data have been inserted"));
+  });
 }
 
 /**
