@@ -29,9 +29,9 @@ app.use(cors());
 /* GETs */
 app.get("/", getAllByPath);
 app.get("/download", download);
-app.get('/getAllFiles', async (req, res) => {
+app.get("/getAllFiles", async (req, res) => {
   res.json(await getAll());
-})
+});
 app.get("/test", async (req, res) => {
   const conditions = {
     idParent: 10,
