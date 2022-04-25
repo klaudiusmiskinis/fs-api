@@ -63,8 +63,8 @@ async function bulked(files) {
  */
 async function update(attributes, conditions) {
   const file = await getFile(conditions);
-  await file.update(attributes);
   if (!file) throw "File not found";
+  await file.update(attributes);
 }
 
 /**
