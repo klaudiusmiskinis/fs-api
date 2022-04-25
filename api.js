@@ -8,7 +8,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const { extended, method } = require("./config");
-const { getRecursiveUp, getAll } = require("./services/file.service");
+const { getRecursiveUp, getAll, update } = require("./services/file.service");
 const {
   download,
   upload,
@@ -32,19 +32,29 @@ app.get("/download", download);
 app.get("/getAllFiles", async (req, res) => {
   res.json(await getAll());
 });
-app.get("/test", async (req, res) => {
-  const conditions = {
-    idParent: 10,
-  };
-  const files = await getRecursiveUp(conditions);
-  console.log(files);
-});
 
 /* POSTs */
 app.post("/", upload);
 app.post("/login", login);
 app.post("/purge", purge);
 app.post("/bulk", bulkAll);
+app.post("/recover", async (req, res) => {
+  const attributes = {
+    isLastVersion: booleanToNumber(req.body.isLastVersion),
+    isRemoved: 0,
+    dateRemoved: null,
+  };
+  const condition = {
+    id: req.body.id,
+  };
+  await update(attributes, condition);
+  res.end();
+});
+
+function booleanToNumber(boolean) {
+  if (booleanToNumber) return 1;
+  else return 0;
+}
 
 /* DELETEs */
 app.delete("/", remove);
