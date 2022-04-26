@@ -1,22 +1,22 @@
 const fs = require("fs");
 const wrench = require("wrench");
 
-module.exports.isEmpty = isEmpty;
-module.exports.reading = reading;
-module.exports.pathChanger = pathChanger;
-module.exports.getRecursive = getRecursive;
-module.exports.dateToday = dateToday;
-module.exports.setDateToName = setDateToName;
-module.exports.splitDoubleSlash = splitDoubleSlash;
-module.exports.latestJsonFile = latestJsonFile;
-module.exports.replaceBackslasWithSlash = replaceBackslasWithSlash;
+module.exports.booleanToNumber = function (boolean) {
+  if (boolean) return 1;
+  else return 0;
+};
+
+module.exports.isPathValid = function (path) {
+  if (path) return path + "/";
+  else return "/";
+};
 
 /**
  * Reads recursive a folder and returns an array with 2 items containing folders and files.
  * @param path
  * @returns
  */
-function reading(path) {
+module.exports.reading = function (path) {
   const folders = [];
   const files = [];
   const content = fs.readdirSync(path);
@@ -28,7 +28,7 @@ function reading(path) {
     folders: folders,
     files: files,
   };
-}
+};
 
 /**
  * Adds a query to the path and end with a slash.
@@ -36,25 +36,25 @@ function reading(path) {
  * @param query
  * @returns
  */
-function pathChanger(path, query) {
+module.exports.pathChanger = function (path, query) {
   return path + query + "/";
-}
+};
 
 /**
  * Checks if the object is empty {}.
  * @param obj
  * @returns
  */
-function isEmpty(obj) {
+module.exports.isEmpty = function (obj) {
   return Object.keys(obj).length === 0;
-}
+};
 
 /**
  * Reads recursive folder and object with folders and files.
  * @param path
  * @returns
  */
-async function getRecursive(path) {
+module.exports.getRecursive = async function (path) {
   const folders = [];
   const files = [];
   let items = await wrench.readdirSyncRecursive(path);
@@ -71,47 +71,46 @@ async function getRecursive(path) {
     folders: folders,
     files: files,
   };
-}
+};
 
 /**
  * Returns todays date.
  * @returns date
  */
-function dateToday() {
+module.exports.dateToday = function () {
   const today = new Date();
   return today.toISOString();
-}
+};
 
 /**
  * Transforms a date into a string with .json appended.
  * @param {*} date
  * @returns string
  */
-function setDateToName(date) {
+module.exports.setDateToName = function (date) {
   return "data/" + date.getTime().toString() + ".json";
-}
+};
 
 /**
  * Replaces double slashes for a single one.
  * @param {*} string
  * @returns string
  */
-function splitDoubleSlash(string) {
+module.exports.splitDoubleSlash = function (string) {
   return string.split("//").join("/");
-}
+};
 
 /**
  * Returns an object with file attribute with the file name.
  * @param {*} date
  * @returns object
  */
-function latestJsonFile(date) {
+module.exports.latestJsonFile = function (date) {
   return {
     file: date + ".json",
   };
-}
+};
 
-
-function replaceBackslasWithSlash(string) {
+module.exports.replaceBackslasWithSlash = function (string) {
   return string.split(/\\/g).join("/");
-}
+};
