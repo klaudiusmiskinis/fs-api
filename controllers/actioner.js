@@ -7,6 +7,8 @@ const {
   dateToday,
   replaceBackslasWithSlash,
   splitDoubleSlash,
+  booleanToNumber,
+  isPathValid,
 } = require("../helpers/helpers");
 const {
   bulked,
@@ -85,9 +87,9 @@ module.exports.remove = async function (req, res) {
   res.end();
 };
 
-module.exports.getAll = async function(req,res) {
+module.exports.getAll = async function (req, res) {
   res.json(await getAll());
-}
+};
 
 module.exports.recover = async function (req, res) {
   const attributes = {
@@ -102,7 +104,7 @@ module.exports.recover = async function (req, res) {
   res.end();
 };
 
-module.exports.setLastVersion = async function(req, res) {
+module.exports.setLastVersion = async function (req, res) {
   const attributes = {
     isLastVersion: booleanToNumber(req.body.isLastVersion),
   };
@@ -111,7 +113,7 @@ module.exports.setLastVersion = async function(req, res) {
   };
   await update(attributes, condition);
   res.end();
-}
+};
 
 module.exports.upload = async function (req, res) {
   const query = req.query;
@@ -230,8 +232,6 @@ module.exports.login = async function (req, res) {
   res.end();
 };
 
-
-
 module.exports.download = function (req, res) {
   try {
     let fullPath = process.env.PATHTOFOLDER;
@@ -242,13 +242,3 @@ module.exports.download = function (req, res) {
     console.log(e);
   }
 };
-
-function booleanToNumber(boolean) {
-  if (boolean) return 1;
-  else return 0;
-}
-
-function isPathValid(path) {
-  if (path) return path + "/";
-  else return "/";
-}
