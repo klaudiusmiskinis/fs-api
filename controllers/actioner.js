@@ -17,6 +17,7 @@ const {
   update,
   create,
   getAllWhere,
+  getAll,
 } = require("../services/file.service");
 const {
   deleteFile,
@@ -26,10 +27,21 @@ const {
   onlyLastVersion,
 } = require("../helpers/contructors");
 
+module.exports.getAllByPath = getAllByPath;
+module.exports.remove = remove;
+module.exports.getAllFiles = getAllFiles;
+module.exports.recover = recover;
+module.exports.setLastVersion = setLastVersion;
+module.exports.upload = upload;
+module.exports.bulk = bulk;
+module.exports.purge = purge;
+module.exports.login = login;
+module.exports.download = download;
+
 /**
  * Returns a JSON with a array of folders and files.
  */
-module.exports.getAllByPath = async function (req, res) {
+async function getAllByPath(req, res) {
   let { path } = req.query;
   let fullPath = process.env.PATHTOFOLDER;
   let result, tempFiles;
@@ -51,12 +63,12 @@ module.exports.getAllByPath = async function (req, res) {
     files: tempFiles,
   });
   res.end();
-};
+}
 
 /**
  * Removes an item (file or folder) by name and path. Also updates the table where it is registered to set it to removed.
  */
-module.exports.remove = async function (req, res) {
+async function remove(req, res) {
   const query = req.query;
   let fullPath = process.env.PATHTOFOLDER;
   if (query.path) fullPath = pathChanger(fullPath, query.path);
@@ -85,13 +97,13 @@ module.exports.remove = async function (req, res) {
     success: true,
   });
   res.end();
-};
+}
 
-module.exports.getAll = async function (req, res) {
+async function getAllFiles(req, res) {
   res.json(await getAll());
-};
+}
 
-module.exports.recover = async function (req, res) {
+async function recover(req, res) {
   const attributes = {
     isLastVersion: booleanToNumber(req.body.isLastVersion),
     isRemoved: 0,
@@ -102,9 +114,9 @@ module.exports.recover = async function (req, res) {
   };
   await update(attributes, condition);
   res.end();
-};
+}
 
-module.exports.setLastVersion = async function (req, res) {
+async function setLastVersion(req, res) {
   const attributes = {
     isLastVersion: booleanToNumber(req.body.isLastVersion),
   };
@@ -113,9 +125,9 @@ module.exports.setLastVersion = async function (req, res) {
   };
   await update(attributes, condition);
   res.end();
-};
+}
 
-module.exports.upload = async function (req, res) {
+async function upload(req, res) {
   const query = req.query;
   const files = req.files;
   let fullPath = process.env.PATHTOFOLDER;
@@ -194,9 +206,9 @@ module.exports.upload = async function (req, res) {
     res.status(200).json(failed);
     res.end();
   }
-};
+}
 
-module.exports.bulk = async function (req, res) {
+async function bulk(req, res) {
   let result = await getRecursive(process.env.PATHTOFOLDER).then();
   const bulk = [];
   result.files.forEach((file) => {
@@ -214,25 +226,25 @@ module.exports.bulk = async function (req, res) {
     success: true,
     message: "Bulked insert in table archivos",
   });
-};
+}
 
-module.exports.purge = async function (req, res) {
+async function purge(req, res) {
   await truncate();
   res.status(200).json({
     success: true,
     message: "table cleared " + req.params.table,
   });
-};
+}
 
-module.exports.login = async function (req, res) {
+async function login(req, res) {
   console.log(req.body);
   res.status(200).json({
     success: true,
   });
   res.end();
-};
+}
 
-module.exports.download = function (req, res) {
+function download(req, res) {
   try {
     let fullPath = process.env.PATHTOFOLDER;
     if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
@@ -241,4 +253,4 @@ module.exports.download = function (req, res) {
   } catch (e) {
     console.log(e);
   }
-};
+}
