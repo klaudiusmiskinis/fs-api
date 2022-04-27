@@ -15,7 +15,7 @@ const {
   purge,
   bulk,
   getAllByPath,
-  getAll,
+  getAllFiles,
   setLastVersion,
   remove,
   recover,
@@ -31,7 +31,7 @@ app.use(cors());
 /* GETs */
 app.get("/", getAllByPath);
 app.get("/download", download);
-app.get("/getAllFiles", getAll);
+app.get("/getAllFiles", getAllFiles);
 
 /* POSTs */
 app.post("/", upload);
