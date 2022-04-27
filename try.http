@@ -10,7 +10,7 @@ POST http://localhost:3001/recover
 
 ###
 
-POST http://localhost:3001/purge
+POST http://localhost:3001/bulk
 
 ###
 
