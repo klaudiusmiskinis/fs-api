@@ -1,22 +1,35 @@
 const fs = require("fs");
 const wrench = require("wrench");
 
-module.exports.booleanToNumber = function (boolean) {
+module.exports.replaceBackslasWithSlash = replaceBackslasWithSlash;
+module.exports.booleanToNumber = booleanToNumber;
+module.exports.isPathValid = isPathValid;
+module.exports.reading = reading;
+module.exports.pathChanger = pathChanger;
+module.exports.isEmpty = isEmpty;
+module.exports.getRecursive = getRecursive;
+module.exports.dateToday = dateToday;
+module.exports.setDateToName = setDateToName;
+module.exports.splitDoubleSlash = splitDoubleSlash;
+module.exports.latestJsonFile = latestJsonFile;
+module.exports.replaceBackslasWithSlash = replaceBackslasWithSlash;
+
+function booleanToNumber(boolean) {
   if (boolean) return 1;
   else return 0;
-};
+}
 
-module.exports.isPathValid = function (path) {
+function isPathValid(path) {
   if (path) return path + "/";
   else return "/";
-};
+}
 
 /**
  * Reads recursive a folder and returns an array with 2 items containing folders and files.
  * @param path
  * @returns
  */
-module.exports.reading = function (path) {
+function reading(path) {
   const folders = [];
   const files = [];
   const content = fs.readdirSync(path);
@@ -28,7 +41,7 @@ module.exports.reading = function (path) {
     folders: folders,
     files: files,
   };
-};
+}
 
 /**
  * Adds a query to the path and end with a slash.
@@ -36,25 +49,25 @@ module.exports.reading = function (path) {
  * @param query
  * @returns
  */
-module.exports.pathChanger = function (path, query) {
+function pathChanger(path, query) {
   return path + query + "/";
-};
+}
 
 /**
  * Checks if the object is empty {}.
  * @param obj
  * @returns
  */
-module.exports.isEmpty = function (obj) {
+function isEmpty(obj) {
   return Object.keys(obj).length === 0;
-};
+}
 
 /**
  * Reads recursive folder and object with folders and files.
  * @param path
  * @returns
  */
-module.exports.getRecursive = async function (path) {
+async function getRecursive(path) {
   const folders = [];
   const files = [];
   let items = await wrench.readdirSyncRecursive(path);
@@ -71,46 +84,46 @@ module.exports.getRecursive = async function (path) {
     folders: folders,
     files: files,
   };
-};
+}
 
 /**
  * Returns todays date.
  * @returns date
  */
-module.exports.dateToday = function () {
+function dateToday() {
   const today = new Date();
   return today.toISOString();
-};
+}
 
 /**
  * Transforms a date into a string with .json appended.
  * @param {*} date
  * @returns string
  */
-module.exports.setDateToName = function (date) {
+function setDateToName(date) {
   return "data/" + date.getTime().toString() + ".json";
-};
+}
 
 /**
  * Replaces double slashes for a single one.
  * @param {*} string
  * @returns string
  */
-module.exports.splitDoubleSlash = function (string) {
+function splitDoubleSlash(string) {
   return string.split("//").join("/");
-};
+}
 
 /**
  * Returns an object with file attribute with the file name.
  * @param {*} date
  * @returns object
  */
-module.exports.latestJsonFile = function (date) {
+function latestJsonFile(date) {
   return {
     file: date + ".json",
   };
-};
+}
 
-module.exports.replaceBackslasWithSlash = function (string) {
+function replaceBackslasWithSlash(string) {
   return string.split(/\\/g).join("/");
-};
+}
