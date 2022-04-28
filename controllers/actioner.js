@@ -237,7 +237,9 @@ async function purge(req, res) {
 }
 
 async function login(req, res) {
-  console.log(req.body);
+  const { body } = req;
+  const { user } = body;
+  console.log(user);
   res.status(200).json({
     success: true,
   });
