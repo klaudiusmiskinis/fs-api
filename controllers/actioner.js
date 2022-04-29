@@ -1,4 +1,7 @@
+require("dotenv").config();
 const fs = require("fs");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { failed } = require("../config/obj");
 const {
   reading,
@@ -26,6 +29,8 @@ const {
   onlyId,
   onlyLastVersion,
 } = require("../helpers/contructors");
+const req = require("express/lib/request");
+const { Admin } = require("../config/account");
 
 module.exports.getAllByPath = getAllByPath;
 module.exports.remove = remove;
@@ -238,10 +243,26 @@ async function purge(req, res) {
 
 async function login(req, res) {
   const { body } = req;
-  const { user } = body;
-  console.log(user);
+  const { username, password } = body;
+  const secret = process.env.SECRET_JWT;
+  const adminPass = process.env.ADMIN_PASS;
+  const adminName = process.env.ADMIN_NAME;
+  let isCorrect = false;
+  let token = "";
+  if (adminName === username) {
+    isCorrect = bcrypt.compareSync(password, adminPass);
+    token = jwt.sign(Admin, secret, { expiresIn: "7d" });
+  }
+  res.set("Authorization", "Bearer " + token);
+
+  if (!isCorrect) {
+    res.status(200).json({
+      token: token,
+      success: isCorrect,
+    });
+  }
   res.status(200).json({
-    success: true,
+    success: isCorrect,
   });
   res.end();
 }
