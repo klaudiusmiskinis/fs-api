@@ -6,8 +6,12 @@ GET http://localhost:3001/recursive
 
 ###
 
-POST http://localhost:3001/recover
+POST http://localhost:3001/login
 
+{
+    "username": "admin",
+    "password": "test"
+}
 ###
 
 POST http://localhost:3001/bulk
