@@ -1,11 +1,11 @@
 require("dotenv").config();
 
-verify.use((req, res, next) => {
+verifyAccess.use((req, res, next) => {
   const token = req.headers["access-token"];
-
   if (token) {
-    jwt.verify(token, process.send.SECRET_JWT, (err, decoded) => {
+    jwt.verify(token, process.env.SECRET_JWT, (err, decoded) => {
       if (err) {
+        console.log('Invalid');
         return res.json({ mensaje: "Invalid token." });
       } else {
         req.decoded = decoded;
