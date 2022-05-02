@@ -1,20 +1,22 @@
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
+const { splitBearer } = require("../helpers/helpers");
 
-verifyAccess.use((req, res, next) => {
-  const token = req.headers["access-token"];
+module.exports.auth = function auth(req, res, next) {
+  const auth = req.headers["authorization"];
+  const token = splitBearer(auth)
   if (token) {
     jwt.verify(token, process.env.SECRET_JWT, (err, decoded) => {
       if (err) {
-        console.log('Invalid');
-        return res.json({ mensaje: "Invalid token." });
+        return res.json({ success: false });
       } else {
         req.decoded = decoded;
         next();
       }
     });
   } else {
-    res.send({
-      mensaje: "Token not provided.",
+    res.json({
+      success: false,
     });
   }
-});
+};
