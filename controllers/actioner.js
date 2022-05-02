@@ -252,18 +252,18 @@ async function login(req, res) {
   if (adminName === username) {
     isCorrect = bcrypt.compareSync(password, adminPass);
     token = jwt.sign(Admin, secret, { expiresIn: "7d" });
+    res.set("Authorization", "Bearer " + token);
   }
-  res.set("Authorization", "Bearer " + token);
-
-  if (!isCorrect) {
+  if (isCorrect) {
     res.status(200).json({
       token: token,
       success: isCorrect,
     });
+  } else {
+    res.status(200).json({
+      success: isCorrect,
+    });
   }
-  res.status(200).json({
-    success: isCorrect,
-  });
   res.end();
 }
 
