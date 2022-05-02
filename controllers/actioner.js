@@ -29,7 +29,6 @@ const {
   onlyId,
   onlyLastVersion,
 } = require("../helpers/contructors");
-const req = require("express/lib/request");
 const { Admin } = require("../config/account");
 
 module.exports.getAllByPath = getAllByPath;
@@ -42,6 +41,7 @@ module.exports.bulk = bulk;
 module.exports.purge = purge;
 module.exports.login = login;
 module.exports.download = download;
+module.exports.downloadPDF = downloadPDF;
 
 /**
  * Returns a JSON with a array of folders and files.
@@ -277,3 +277,5 @@ function download(req, res) {
     console.log(e);
   }
 }
+
+function downloadPDF(req, res) {}
