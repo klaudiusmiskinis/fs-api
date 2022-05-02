@@ -10,7 +10,7 @@ POST http://localhost:3001/login
 
 {
     "username": "admin",
-    "password": "test"
+    "password": "1001"
 }
 ###
 
