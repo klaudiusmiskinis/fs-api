@@ -1,6 +1,5 @@
 /* Imports */
 require("dotenv").config();
-
 const methodOverride = require("method-override");
 const fileupload = require("express-fileupload");
 const bodyParser = require("body-parser");
@@ -19,7 +18,9 @@ const {
   setLastVersion,
   remove,
   recover,
+  downloadPDF,
 } = require("./controllers/actioner");
+const { auth } = require("./middlewares/auth");
 
 /* Configuration */
 app.use(bodyParser.urlencoded(extended));
@@ -31,18 +32,19 @@ app.use(cors());
 /* GETs */
 app.get("/", getAllByPath);
 app.get("/download", download);
-app.get("/getAllFiles", getAllFiles);
+app.get("/download/pdf", downloadPDF);
+app.get("/getAllFiles", auth, getAllFiles);
 
 /* POSTs */
-app.post("/", upload);
+app.post("/", auth, upload);
 app.post("/login", login);
-app.post("/purge", purge);
-app.post("/bulk", bulk);
-app.post("/recover", recover);
-app.post("/lastversion", setLastVersion);
+app.post("/purge", auth, purge);
+app.post("/bulk", auth, bulk);
+app.post("/recover", auth, recover);
+app.post("/lastversion", auth, setLastVersion);
 
 /* DELETEs */
-app.delete("/", remove);
+app.delete("/", auth, remove);
 
 /* LISTEN */
 app.listen(process.env.PORT, (err) => {
