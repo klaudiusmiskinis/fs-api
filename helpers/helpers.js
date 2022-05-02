@@ -13,6 +13,7 @@ module.exports.setDateToName = setDateToName;
 module.exports.splitDoubleSlash = splitDoubleSlash;
 module.exports.latestJsonFile = latestJsonFile;
 module.exports.replaceBackslasWithSlash = replaceBackslasWithSlash;
+module.exports.splitBearer = splitBearer;
 
 function booleanToNumber(boolean) {
   if (boolean) return 1;
@@ -126,4 +127,8 @@ function latestJsonFile(date) {
 
 function replaceBackslasWithSlash(string) {
   return string.split(/\\/g).join("/");
+}
+
+function splitBearer(auth) {
+  return auth.split("Bearer")[auth.split("Bearer").length - 1];
 }
