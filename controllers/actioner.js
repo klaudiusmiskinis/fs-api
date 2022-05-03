@@ -3,6 +3,7 @@ const fs = require("fs");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { failed } = require("../config/obj");
+const converter = require("docx-pdf");
 const {
   reading,
   pathChanger,
@@ -300,4 +301,16 @@ function download(req, res) {
   }
 }
 
-function downloadPDF(req, res) {}
+function downloadPDF(req, res) {
+  let fullPath = process.env.PATHTOFOLDER;
+  if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
+  const file = fullPath + req.query.download;
+  const fileDotPDF = req.query.download.split('.')[0] + '.pdf'
+  console.log(fileDotPDF);
+  converter(file, "./converted/" + fileDotPDF, function (err, result) {
+    if (err) {
+      console.log("Converting Doc to PDF failed", err);
+    }
+    console.log("Converting Doc to PDF succesfull", result);
+  });
+}
