@@ -19,6 +19,7 @@ const {
   remove,
   recover,
   downloadPDF,
+  isAuthenticated,
 } = require("./controllers/actioner");
 const { auth } = require("./middlewares/auth");
 
@@ -34,6 +35,7 @@ app.get("/", getAllByPath);
 app.get("/download", download);
 app.get("/download/pdf", downloadPDF);
 app.get("/getAllFiles", auth, getAllFiles);
+app.get("/isAuthenticated", isAuthenticated);
 
 /* POSTs */
 app.post("/", auth, upload);
