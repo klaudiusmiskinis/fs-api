@@ -1,4 +1,4 @@
-GET http://localhost:3001/isAuthenticated
+GET http://localhost:3001/download/pdf?download=prueba2.docx
 
 ###
 
