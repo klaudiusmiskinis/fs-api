@@ -12,6 +12,7 @@ const {
   splitDoubleSlash,
   booleanToNumber,
   isPathValid,
+  splitBearer,
 } = require("../helpers/helpers");
 const {
   bulked,
@@ -30,6 +31,7 @@ const {
   onlyLastVersion,
 } = require("../helpers/contructors");
 const { Admin } = require("../config/account");
+const res = require("express/lib/response");
 
 module.exports.getAllByPath = getAllByPath;
 module.exports.remove = remove;
@@ -42,6 +44,7 @@ module.exports.purge = purge;
 module.exports.login = login;
 module.exports.download = download;
 module.exports.downloadPDF = downloadPDF;
+module.exports.isAuthenticated = isAuthenticated;
 
 /**
  * Returns a JSON with a array of folders and files.
@@ -58,16 +61,35 @@ async function getAllByPath(req, res) {
     tempFiles = await getAllWhere({ path: path });
   } catch (e) {
     console.log(e);
-    res.status(200).json(failed);
+    res.json(failed);
     res.end();
   }
-  res.status(200).json({
+  res.json({
     success: true,
     path: path,
     folders: result.folders,
     files: tempFiles,
   });
   res.end();
+}
+
+async function isAuthenticated(req, res) {
+  const auth = req.headers["authorization"];
+  if (!auth) return res.json({ isAuthenticated: false });
+  const token = splitBearer(auth);
+  if (token) {
+    jwt.verify(token, process.env.SECRET_JWT, (err) => {
+      if (err) {
+        return res.json({ isAuthenticated: false });
+      } else {
+        return res.json({ isAuthenticated: true });
+      }
+    });
+  } else {
+    res.json({
+      isAuthenticated: false,
+    });
+  }
 }
 
 /**
@@ -95,10 +117,10 @@ async function remove(req, res) {
     }
   } catch (e) {
     console.log(e);
-    res.status(200).json(failed);
+    res.json(failed);
     res.end();
   }
-  res.status(200).json({
+  res.json({
     success: true,
   });
   res.end();
@@ -202,13 +224,13 @@ async function upload(req, res) {
       await update(attributes, conditions);
       await fs.renameSync(fullPath + query.edit, fullPath + query.to);
     }
-    res.status(200).json({
+    res.json({
       success: true,
     });
     res.end();
   } catch (e) {
     console.log(e);
-    res.status(200).json(failed);
+    res.json(failed);
     res.end();
   }
 }
@@ -235,7 +257,7 @@ async function bulk(req, res) {
 
 async function purge(req, res) {
   await truncate();
-  res.status(200).json({
+  res.json({
     success: true,
     message: "table cleared " + req.params.table,
   });
@@ -255,12 +277,12 @@ async function login(req, res) {
     res.set("Authorization", "Bearer " + token);
   }
   if (isCorrect) {
-    res.status(200).json({
+    res.json({
       token: token,
       success: isCorrect,
     });
   } else {
-    res.status(200).json({
+    res.json({
       success: isCorrect,
     });
   }
