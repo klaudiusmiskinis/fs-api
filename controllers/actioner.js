@@ -300,6 +300,7 @@ async function isAuthenticated(req, res) {
   const auth = req.headers["authorization"];
   if (!auth) return res.json({ isAuthenticated: false });
   const token = splitBearer(auth);
+  console.log(token);
   if (token) {
     jwt.verify(token, process.env.SECRET_JWT, (err) => {
       if (err) {
