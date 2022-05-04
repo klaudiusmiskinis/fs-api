@@ -74,25 +74,6 @@ async function getAllByPath(req, res) {
   res.end();
 }
 
-async function isAuthenticated(req, res) {
-  const auth = req.headers["authorization"];
-  if (!auth) return res.json({ isAuthenticated: false });
-  const token = splitBearer(auth);
-  if (token) {
-    jwt.verify(token, process.env.SECRET_JWT, (err) => {
-      if (err) {
-        return res.json({ isAuthenticated: false });
-      } else {
-        return res.json({ isAuthenticated: true });
-      }
-    });
-  } else {
-    res.json({
-      isAuthenticated: false,
-    });
-  }
-}
-
 /**
  * Removes an item (file or folder) by name and path. Also updates the table where it is registered to set it to removed.
  */
@@ -305,7 +286,7 @@ function downloadPDF(req, res) {
   let fullPath = process.env.PATHTOFOLDER;
   if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
   const file = fullPath + req.query.download;
-  const fileDotPDF = req.query.download.split('.')[0] + '.pdf'
+  const fileDotPDF = req.query.download.split(".")[0] + ".pdf";
   console.log(fileDotPDF);
   converter(file, "./converted/" + fileDotPDF, function (err, result) {
     if (err) {
@@ -313,4 +294,23 @@ function downloadPDF(req, res) {
     }
     console.log("Converting Doc to PDF succesfull", result);
   });
+}
+
+async function isAuthenticated(req, res) {
+  const auth = req.headers["authorization"];
+  if (!auth) return res.json({ isAuthenticated: false });
+  const token = splitBearer(auth);
+  if (token) {
+    jwt.verify(token, process.env.SECRET_JWT, (err) => {
+      if (err) {
+        return res.json({ isAuthenticated: false });
+      } else {
+        return res.json({ isAuthenticated: true });
+      }
+    });
+  } else {
+    res.json({
+      isAuthenticated: false,
+    });
+  }
 }
