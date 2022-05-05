@@ -2,8 +2,8 @@ require("dotenv").config();
 const fs = require("fs");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { failed } = require("../config/obj");
 const converter = require("docx-pdf");
+const { failed } = require("../config/obj");
 const {
   reading,
   pathChanger,
@@ -32,7 +32,6 @@ const {
   onlyLastVersion,
 } = require("../helpers/contructors");
 const { Admin } = require("../config/account");
-const res = require("express/lib/response");
 
 module.exports.getAllByPath = getAllByPath;
 module.exports.remove = remove;
