@@ -286,7 +286,6 @@ function downloadPDF(req, res) {
   if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
   const file = fullPath + req.query.download;
   const fileDotPDF = req.query.download.split(".")[0] + ".pdf";
-  console.log(fileDotPDF);
   converter(file, "./converted/" + fileDotPDF, function (err, result) {
     if (err) {
       console.log(err);
@@ -294,7 +293,7 @@ function downloadPDF(req, res) {
     res.download(result.filename);
     setTimeout(function () {
       fs.rmSync("./converted/" + fileDotPDF);
-    }, 5000);
+    }, 3000);
   });
 }
 
@@ -302,7 +301,6 @@ async function isAuthenticated(req, res) {
   const auth = req.headers["authorization"];
   if (!auth) return res.json({ isAuthenticated: false });
   const token = splitBearer(auth);
-  console.log(token);
   if (token) {
     jwt.verify(token, process.env.SECRET_JWT, (err) => {
       if (err) {
