@@ -289,9 +289,12 @@ function downloadPDF(req, res) {
   console.log(fileDotPDF);
   converter(file, "./converted/" + fileDotPDF, function (err, result) {
     if (err) {
-      console.log("Converting Doc to PDF failed", err);
+      console.log(err);
     }
-    console.log("Converting Doc to PDF succesfull", result);
+    res.download(result.filename);
+    setTimeout(function () {
+      fs.rmSync("./converted/" + fileDotPDF);
+    }, 5000);
   });
 }
 
