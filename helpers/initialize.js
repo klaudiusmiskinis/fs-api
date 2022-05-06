@@ -10,6 +10,7 @@ async function initialize() {
     connection.password,
     {
       dialect: "mysql",
+      logging: false,
     }
   );
   module.exports.File = require("../models/file")(sequelize);
