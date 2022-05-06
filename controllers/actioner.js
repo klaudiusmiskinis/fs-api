@@ -282,19 +282,23 @@ function download(req, res) {
 }
 
 function downloadPDF(req, res) {
-  let fullPath = process.env.PATHTOFOLDER;
-  if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
-  const file = fullPath + req.query.download;
-  const fileDotPDF = req.query.download.split(".")[0] + ".pdf";
-  converter(file, "./converted/" + fileDotPDF, function (err, result) {
-    if (err) {
-      console.log(err);
-    }
-    res.download(result.filename);
-    setTimeout(function () {
-      fs.rmSync("./converted/" + fileDotPDF);
-    }, 3000);
-  });
+  try {
+    let fullPath = process.env.PATHTOFOLDER;
+    if (req.query.path) fullPath = pathChanger(fullPath, req.query.path);
+    const file = fullPath + req.query.download;
+    const fileDotPDF = req.query.download.split(".")[0] + ".pdf";
+    converter(file, "./converted/" + fileDotPDF, function (err, result) {
+      if (err) {
+        console.log("a", err);
+      }
+      res.download(result.filename);
+      setTimeout(function () {
+        fs.rmSync("./converted/" + fileDotPDF);
+      }, 3000);
+    });
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 async function isAuthenticated(req, res) {
