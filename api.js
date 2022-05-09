@@ -43,6 +43,10 @@ app.post("/login", login);
 app.post("/purge", auth, purge);
 app.post("/bulk", auth, bulk);
 app.post("/recover", auth, recover);
+app.post("/updateRow", auth, (req, res) => {
+  console.log(req.body);
+  res.end();
+});
 app.post("/lastversion", auth, setLastVersion);
 
 /* DELETEs */
