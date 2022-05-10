@@ -308,14 +308,23 @@ async function isAuthenticated(req, res) {
   if (token) {
     jwt.verify(token, process.env.SECRET_JWT, (err) => {
       if (err) {
-        return res.json({ isAuthenticated: false });
+        return res.json({
+          success: false,
+          isAuthenticated: false,
+          reason: err.message,
+        });
       } else {
-        return res.json({ isAuthenticated: true });
+        return res.json({
+          success: true,
+          isAuthenticated: true,
+        });
       }
     });
   } else {
     res.json({
+      success: false,
       isAuthenticated: false,
+      reason: "Token not found",
     });
   }
 }
