@@ -1,8 +1,5 @@
-GET http://localhost:3001/download/pdf?download=ipsum.docx
-
-###
-
-GET http://localhost:3001/recursive
+GET http://localhost:3001/persons
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYWRtaW4iLCJuYW1lIjoiYWRtaW4iLCJpZCI6MSwiaWF0IjoxNjUyMDgyMjQ3LCJleHAiOjE2NTI2ODcwNDd9.6iTenz-2v-bxSDWGnYXq7HXquBMv_azD5BZOjZqQX8Q
 
 ###
 
@@ -12,6 +9,8 @@ POST http://localhost:3001/login
     "username": "admin",
     "password": "1001"
 }
+
+
 ###
 
 POST http://localhost:3001/bulk
