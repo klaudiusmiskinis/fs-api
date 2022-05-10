@@ -130,5 +130,6 @@ function replaceBackslasWithSlash(string) {
 }
 
 function splitBearer(auth) {
+  if (!auth) return;
   return auth.split("Bearer ")[auth.split("Bearer ").length - 1];
 }
