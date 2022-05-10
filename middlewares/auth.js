@@ -8,7 +8,7 @@ module.exports.auth = function auth(req, res, next) {
   if (token) {
     jwt.verify(token, process.env.SECRET_JWT, (err, decoded) => {
       if (err) {
-        return res.json({ success: false });
+        return res.json({ success: false, reason: err.message });
       } else {
         req.decoded = decoded;
         next();
@@ -17,6 +17,7 @@ module.exports.auth = function auth(req, res, next) {
   } else {
     res.json({
       success: false,
+      reason: "Token not found",
     });
   }
 };
