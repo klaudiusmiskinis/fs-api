@@ -45,6 +45,7 @@ module.exports.login = login;
 module.exports.download = download;
 module.exports.downloadPDF = downloadPDF;
 module.exports.isAuthenticated = isAuthenticated;
+module.exports.getPersons = getPersons;
 
 /**
  * Returns a JSON with a array of folders and files.
@@ -299,6 +300,11 @@ function downloadPDF(req, res) {
   } catch (e) {
     console.log(e);
   }
+}
+
+async function getPersons(req, res) {
+  const persons = require("../persons.json");
+  res.json(persons);
 }
 
 async function isAuthenticated(req, res) {
