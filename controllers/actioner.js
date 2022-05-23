@@ -46,6 +46,7 @@ module.exports.download = download;
 module.exports.downloadPDF = downloadPDF;
 module.exports.isAuthenticated = isAuthenticated;
 module.exports.getPersons = getPersons;
+module.exports.updateTable = updateTable;
 
 /**
  * Returns a JSON with a array of folders and files.
@@ -108,6 +109,14 @@ async function remove(req, res) {
   res.end();
 }
 
+async function updateTable(req, res) {
+  if (!req.body.new.updateDate) req.body.new.updateDate = dateToday();
+  await update(req.body.new, req.body.where);
+  res.json({
+    success: true,
+  });
+}
+
 async function getAllFiles(req, res) {
   res.json(await getAll());
 }
@@ -139,7 +148,6 @@ async function setLastVersion(req, res) {
 async function upload(req, res) {
   const query = req.query;
   const files = req.files;
-  console.log(query, req.body);
   let fullPath = process.env.PATHTOFOLDER;
   if (query.path) fullPath = pathChanger(fullPath, query.path);
   try {
