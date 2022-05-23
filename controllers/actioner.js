@@ -139,6 +139,8 @@ async function setLastVersion(req, res) {
 async function upload(req, res) {
   const query = req.query;
   const files = req.files;
+
+  console.log(query, req.body);
   let fullPath = process.env.PATHTOFOLDER;
   if (query.path) fullPath = pathChanger(fullPath, query.path);
   try {
@@ -154,45 +156,26 @@ async function upload(req, res) {
         const attributes = onlyLastVersion(false);
         const conditions = onlyId(file.dataValues.id);
         await update(attributes, conditions);
-        if (query.reason) {
-          const newFile = {
-            name: files.file.name,
-            path: isPathValid(query.path),
-            idParent: file.dataValues.id,
-            createdDate: dateToday(),
-            isLastVersion: 1,
-            reason: query.reason,
-          };
-          await create(newFile);
-        } else {
-          const newFile = {
-            name: files.file.name,
-            path: isPathValid(query.path),
-            idParent: file.dataValues.id,
-            createdDate: dateToday(),
-            isLastVersion: 1,
-          };
-          await create(newFile);
-        }
+        const newFile = {
+          name: files.file.name,
+          path: isPathValid(query.path),
+          idParent: file.dataValues.id,
+          createdDate: dateToday(),
+          isLastVersion: 1,
+          author: query.author,
+        };
+        if (query.reason) newFile.reason = query.reason;
+        await create(newFile);
       } else {
-        if (query.reason) {
-          const newFile = {
-            name: files.file.name,
-            path: isPathValid(query.path),
-            createdDate: dateToday(),
-            isLastVersion: 1,
-            reason: query.reason,
-          };
-          await create(newFile);
-        } else {
-          const newFile = {
-            name: files.file.name,
-            path: isPathValid(query.path),
-            createdDate: dateToday(),
-            isLastVersion: 1,
-          };
-          await create(newFile);
-        }
+        const newFile = {
+          name: files.file.name,
+          path: isPathValid(query.path),
+          createdDate: dateToday(),
+          isLastVersion: 1,
+          author: query.author,
+        };
+        if (query.reason) newFile.reason = query.reason;
+        await create(newFile);
       }
       await files.file.mv(fullPath + files.file.name);
     } else if (query.folder) {
