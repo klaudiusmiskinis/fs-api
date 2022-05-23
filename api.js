@@ -38,7 +38,6 @@ app.get("/download/pdf", downloadPDF);
 app.get("/getAllFiles", auth, getAllFiles);
 app.get("/isAuthenticated", isAuthenticated);
 app.get("/persons", auth, getPersons);
-app.get("/person/:dni", auth, isAuthenticated);
 
 /* POSTs */
 app.post("/", auth, upload);
