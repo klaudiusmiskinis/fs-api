@@ -17,11 +17,13 @@ function model(sequelize) {
     createdDate: { type: DataTypes.DATEONLY, allowNull: true },
     isRemoved: { type: DataTypes.TINYINT(4), allowNull: true },
     removedDate: { type: DataTypes.DATEONLY, allowNull: true },
+    updateDate: { type: DataTypes.DATEONLY, allowNull: true },
     reason: {
       type: DataTypes.STRING(300),
       allowNull: true,
       defaultValue: "Sin motivos.",
     },
+    author: { type: DataTypes.STRING(300), allowNull: true },
   };
 
   const options = {
