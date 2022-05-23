@@ -139,7 +139,6 @@ async function setLastVersion(req, res) {
 async function upload(req, res) {
   const query = req.query;
   const files = req.files;
-
   console.log(query, req.body);
   let fullPath = process.env.PATHTOFOLDER;
   if (query.path) fullPath = pathChanger(fullPath, query.path);
@@ -163,6 +162,7 @@ async function upload(req, res) {
           createdDate: dateToday(),
           isLastVersion: 1,
           author: query.author,
+          updateDate: dateToday(),
         };
         if (query.reason) newFile.reason = query.reason;
         await create(newFile);
@@ -173,6 +173,7 @@ async function upload(req, res) {
           createdDate: dateToday(),
           isLastVersion: 1,
           author: query.author,
+          updateDate: dateToday(),
         };
         if (query.reason) newFile.reason = query.reason;
         await create(newFile);
