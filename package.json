@@ -1,4 +1,8 @@
 {
+  "name": "fs-api",
+  "version": "2.0.0",
+  "description": "Filesystem & Express for a live management of folders and files through the browser.",
+  "main": "api.js",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
@@ -11,7 +15,26 @@
     "method-override": "^3.0.0",
     "mysql2": "^2.3.3",
     "sequelize": "^6.18.0",
-    "supervisor": "^0.12.0",
     "wrench": "^1.5.9"
-  }
+  },
+  "devDependencies": {
+    "supervisor": "^0.12.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/klaudiusmiskinis/fs-api.git"
+  },
+  "keywords": [
+    "NodeJS",
+    "Express"
+  ],
+  "author": "Klaudijus Miskinis",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/klaudiusmiskinis/fs-api/issues"
+  },
+  "homepage": "https://github.com/klaudiusmiskinis/fs-api#readme"
 }
