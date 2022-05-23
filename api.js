@@ -21,6 +21,7 @@ const {
   downloadPDF,
   isAuthenticated,
   getPersons,
+  updateTable,
 } = require("./controllers/actioner");
 const { auth } = require("./middlewares/auth");
 
@@ -45,10 +46,7 @@ app.post("/login", login);
 app.post("/purge", auth, purge);
 app.post("/bulk", auth, bulk);
 app.post("/recover", auth, recover);
-app.post("/updateRow", auth, (req, res) => {
-  console.log(req.body);
-  res.end();
-});
+app.post("/update", auth, updateTable);
 app.post("/lastversion", auth, setLastVersion);
 
 /* DELETEs */
