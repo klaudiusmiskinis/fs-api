@@ -310,9 +310,10 @@ async function getPersons(req, res) {
 async function isAuthenticated(req, res) {
   const auth = req.headers["authorization"];
   if (!auth) return res.json({ isAuthenticated: false });
+  const secret = process.env.SECRET_JWT;
   const token = splitBearer(auth);
   if (token) {
-    jwt.verify(token, process.env.SECRET_JWT, (err) => {
+    jwt.verify(token, secret, (err) => {
       if (err) {
         return res.json({
           success: false,
