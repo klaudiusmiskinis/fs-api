@@ -4,7 +4,3 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYWRtaW4iLCJuYW1l
 ###
 
 GET http://localhost:3001/download?download=ipsum.png
-
-###
-
-GET http://localhost:3001/test
