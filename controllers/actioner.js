@@ -47,9 +47,12 @@ module.exports.downloadPDF = downloadPDF;
 module.exports.isAuthenticated = isAuthenticated;
 module.exports.getPersons = getPersons;
 module.exports.updateTable = updateTable;
+module.exports.addPerson = addPerson;
 
 /**
  * Returns a JSON with a array of folders and files.
+ * @param {*} req
+ * @param {*} res
  */
 async function getAllByPath(req, res) {
   let { path } = req.query;
@@ -77,6 +80,8 @@ async function getAllByPath(req, res) {
 
 /**
  * Removes an item (file or folder) by name and path. Also updates the table where it is registered to set it to removed.
+ * @param {*} req
+ * @param {*} res
  */
 async function remove(req, res) {
   const query = req.query;
@@ -109,18 +114,43 @@ async function remove(req, res) {
   res.end();
 }
 
+/**
+ * Manages a request with body object and makes differente tweaks in database.
+ * @param {*} req
+ * @param {*} res
+ */
 async function updateTable(req, res) {
-  if (!req.body.new.updateDate) req.body.new.updateDate = dateToday();
-  await update(req.body.new, req.body.where);
+  const newChanges = req.body.new;
+  const oldChanges = req.body.old;
+  if (newChanges.isRemoved && !newChanges.removedDate)
+    newChanges.removedDate = dateToday();
+  if (!newChanges.updateDate) newChanges.updateDate = dateToday();
+  await update(newChanges, req.body.where);
+  if (newChanges.name) {
+    let fullPath = process.env.PATHTOFOLDER;
+    if (oldChanges.path) fullPath = pathChanger(fullPath, oldChanges.path);
+    fullPath = splitDoubleSlash(fullPath);
+    await fs.renameSync(fullPath + oldChanges.name, fullPath + newChanges.name);
+  }
   res.json({
     success: true,
   });
 }
 
+/**
+ * Returns all files for the admin path
+ * @param {*} req
+ * @param {*} res
+ */
 async function getAllFiles(req, res) {
   res.json(await getAll());
 }
 
+/**
+ * Makes a recover from database with the id of the file
+ * @param {*} req
+ * @param {*} res
+ */
 async function recover(req, res) {
   const attributes = {
     isLastVersion: booleanToNumber(req.body.isLastVersion),
@@ -134,6 +164,11 @@ async function recover(req, res) {
   res.end();
 }
 
+/**
+ * Sets last version to 1 or 0 depends on user input
+ * @param {*} req
+ * @param {*} res
+ */
 async function setLastVersion(req, res) {
   const attributes = {
     isLastVersion: booleanToNumber(req.body.isLastVersion),
@@ -145,6 +180,11 @@ async function setLastVersion(req, res) {
   res.end();
 }
 
+/**
+ * General function for update a file/make a directory or rename related to files.
+ * @param {*} req
+ * @param {*} res
+ */
 async function upload(req, res) {
   const query = req.query;
   const files = req.files;
@@ -209,6 +249,11 @@ async function upload(req, res) {
   }
 }
 
+/**
+ * Makes a massive bulk insert into database
+ * @param {*} req
+ * @param {*} res
+ */
 async function bulk(req, res) {
   let result = await getRecursive(process.env.PATHTOFOLDER).then();
   const bulk = [];
@@ -229,6 +274,11 @@ async function bulk(req, res) {
   });
 }
 
+/**
+ * Purges database rows and cleans.
+ * @param {*} req
+ * @param {*} res
+ */
 async function purge(req, res) {
   await truncate();
   res.json({
@@ -237,6 +287,11 @@ async function purge(req, res) {
   });
 }
 
+/**
+ * Manages user input to check if has access to Admin Account
+ * @param {*} req
+ * @param {*} res
+ */
 async function login(req, res) {
   const { body } = req;
   const { username, password } = body;
@@ -263,6 +318,11 @@ async function login(req, res) {
   res.end();
 }
 
+/**
+ * Makes it possible to user to download files.
+ * @param {*} req
+ * @param {*} res
+ */
 function download(req, res) {
   try {
     let fullPath = process.env.PATHTOFOLDER;
@@ -274,6 +334,11 @@ function download(req, res) {
   }
 }
 
+/**
+ * Makes it possible to user to download as PDF
+ * @param {*} req
+ * @param {*} res
+ */
 function downloadPDF(req, res) {
   try {
     let fullPath = process.env.PATHTOFOLDER;
@@ -282,7 +347,7 @@ function downloadPDF(req, res) {
     const fileDotPDF = req.query.download.split(".")[0] + ".pdf";
     converter(file, "./converted/" + fileDotPDF, function (err, result) {
       if (err) {
-        console.log("a", err);
+        throw new Error(err.message);
       }
       res.download(result.filename);
       setTimeout(function () {
@@ -294,11 +359,54 @@ function downloadPDF(req, res) {
   }
 }
 
-async function getPersons(req, res) {
+/**
+ * Adds a new person to the persons.json
+ * @param {*} req
+ * @param {*} res
+ */
+function addPerson(req, res) {
   const persons = require("../persons.json");
-  res.json(persons);
+  const person = {
+    name: req.body.name,
+    lastname: req.body.lastname,
+    dni: req.body.dni,
+  };
+  persons.push(person);
+  fs.writeFile(
+    "./persons.json",
+    JSON.stringify(persons, null, 4),
+    function (err) {
+      if (err) {
+        return console.log(err);
+      }
+    }
+  );
+  res.json({
+    success: true,
+    message: "Person added",
+  });
 }
 
+/**
+ * Retrns all people that exist in persons.json
+ * @param {*} req
+ * @param {*} res
+ */
+async function getPersons(req, res) {
+  if (fs.existsSync("../persons.json")) {
+    const persons = require("../persons.json");
+    res.json(persons);
+  } else {
+    res.json({ error: true });
+  }
+}
+
+/**
+ * Checks if user has authorization
+ * @param {*} req
+ * @param {*} res
+ * @returns
+ */
 async function isAuthenticated(req, res) {
   const auth = req.headers["authorization"];
   if (!auth) return res.json({ isAuthenticated: false });

@@ -1,4 +1,4 @@
-POST http://localhost:3001/bulk
+GET http://localhost:3001/persons
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYWRtaW4iLCJuYW1lIjoiYWRtaW4iLCJpZCI6MSwiaWF0IjoxNjUzMDM0MzAxLCJleHAiOjE2NTM2MzkxMDF9.1cZ0kQfZTwrJS3BS5D__aX2Qp623KLEofekdE1y8bl8
 
 ###

@@ -22,6 +22,7 @@ const {
   isAuthenticated,
   getPersons,
   updateTable,
+  addPerson,
 } = require("./controllers/actioner");
 const { auth } = require("./middlewares/auth");
 
@@ -48,6 +49,7 @@ app.post("/bulk", auth, bulk);
 app.post("/recover", auth, recover);
 app.post("/update", auth, updateTable);
 app.post("/lastversion", auth, setLastVersion);
+app.post("/persons", auth, addPerson);
 
 /* DELETEs */
 app.delete("/", auth, remove);
