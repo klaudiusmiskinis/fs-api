@@ -4,6 +4,7 @@ const methodOverride = require("method-override");
 const fileupload = require("express-fileupload");
 const bodyParser = require("body-parser");
 const express = require("express");
+const helmet = require("helmet");
 const cors = require("cors");
 const app = express();
 const { extended, method } = require("./config");
@@ -31,6 +32,7 @@ app.use(bodyParser.urlencoded(extended));
 app.use(methodOverride(method));
 app.use(express.json());
 app.use(fileupload());
+app.use(helmet());
 app.use(cors());
 
 /* GETs */
