@@ -392,8 +392,8 @@ function addPerson(req, res) {
  * @param {*} req
  * @param {*} res
  */
-async function getPersons(req, res) {
-  if (fs.existsSync("../persons.json")) {
+function getPersons(req, res) {
+  if (fs.existsSync("./persons.json")) {
     const persons = require("../persons.json");
     res.json(persons);
   } else {
